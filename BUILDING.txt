@@ -1,1 +1,3 @@
 Please READ Tutorial 1 and don't build the tutorials yourself ! Use CMake instead. If you have a problem, read the FAQ.
+
+Gogo : cd /home/axiom/Bureau/Game_Engine/build && cmake .. && make -j && ./launch-equilibrium.sh    
