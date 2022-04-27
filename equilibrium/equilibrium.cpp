@@ -26,7 +26,7 @@ using namespace glm;
 #define STB_IMAGE_IMPLEMENTATION
 #include "../common/stb_image.h"
 //#include "tools/Object.cpp"
-#include "tools/InputManager.cpp"
+#include "src/InputManager.cpp"
 
 // void processInput(GLFWwindow *window);
 
@@ -147,11 +147,11 @@ int main(void)
     // glfwSetKeyCallback(window, inputManager->key_callback);
     CAMERA camera = inputManager->scene->cameras[0];
 
-    unique_ptr<Object> plane_uniquePtr = make_unique<Object>("objects/plane_surface.off", modelID, programID);
-    Object *terrain = plane_uniquePtr.get();
+    unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("objects/plane_surface.off", modelID, programID);
+    GameObject *terrain = plane_uniquePtr.get();
 
-    unique_ptr<Object> ball_uniquePtr = make_unique<Object>("sphere", 50., modelID, programID);
-    Object *ball = ball_uniquePtr.get();
+    unique_ptr<GameObject> ball_uniquePtr = make_unique<GameObject>("sphere", 50., modelID, programID);
+    GameObject *ball = ball_uniquePtr.get();
 
     ball->applyTexture(earth_texture, TextureID);
 
@@ -190,8 +190,6 @@ int main(void)
         // Use our shader
         glUseProgram(programID);
 
-        cout << "height : " << ball->heightInTriangle(terrain->mesh) << endl;
-
         vec3 actualBallPosition = ball->transform->getLocalTranslation();
 
         /*+ noeudElephant.mesh.radius * noeudElephant.transform.scale[2]*/
@@ -199,7 +197,6 @@ int main(void)
         // ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, 0.));
 
         // ball->triangleIndexOnPosition(terrain->mesh);
-        cout << ball->heightInTriangle(terrain->mesh) << endl;
         // cout << ball->transform->getLocalTranslation().x << " " << ball->transform->getLocalTranslation().y << " " << ball->transform->getLocalTranslation().z << endl;
 
         terrain->updateSelfAndChild();

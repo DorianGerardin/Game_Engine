@@ -53,9 +53,9 @@ add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
-# TP1
+# Equilibirium
 add_executable(equilibrium
-        equilibrium/equilibrium.cpp
+    equilibrium/equilibrium.cpp
 	common/shader.cpp
 	common/shader.hpp
 	common/controls.cpp
@@ -67,11 +67,18 @@ add_executable(equilibrium
 	common/vboindexer.cpp
 	common/vboindexer.hpp
 	
-        equilibrium/vertex_shader.glsl
-        equilibrium/fragment_shader.glsl
-        equilibrium/tools/Transform.cpp
-        equilibrium/tools/Object.cpp
-        equilibrium/tools/Scene.cpp
+    equilibrium/src/Transform.cpp
+    equilibrium/headers/Transform.hpp
+    equilibrium/src/GameObject.cpp
+    equilibrium/headers/GameObject.hpp
+    equilibrium/src/Scene.cpp
+    equilibrium/headers/Scene.hpp
+    equilibrium/src/Mesh.cpp
+    equilibrium/headers/Mesh.hpp
+    equilibrium/src/SimpleObject.cpp
+    equilibrium/headers/SimpleObject.hpp
+    equilibrium/src/CameraObject.cpp
+    equilibrium/headers/CameraObject.hpp
 )
 target_link_libraries(equilibrium
 	${ALL_LIBS}

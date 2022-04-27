@@ -8,7 +8,7 @@
 
 // Include GLFW
 #include <GLFW/glfw3.h>
-#include "Scene.cpp"
+#include "../headers/Scene.hpp"
 
 float rotationX = 0.;
 float rotationY = 0.;
