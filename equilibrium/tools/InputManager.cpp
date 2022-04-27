@@ -16,13 +16,14 @@ float rotationZ = 0.;
 float rotationNoStop = 0.;
 float speedRotation = 1.;
 
-float speedBall = 0.2;
+float speedBall = 0.02;
 
 class InputManager {
 
 	public:
 		GLFWwindow* window;
 		Scene* scene;
+		bool wireframe_mode = false;
 
 	public:
 
@@ -50,6 +51,7 @@ class InputManager {
 
 	// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 	// ---------------------------------------------------------------------------------------------------------
+		
 		void processInput(float deltaTime)
 		{
 			//CAMERA camera = this->scene->cameras[0];
@@ -60,6 +62,9 @@ class InputManager {
 		        glfwSetWindowShouldClose(window, true);
 
 		    glm::vec3 camera_right = glm::vec3(1.0f, 0.0f,  0.0f);
+
+		    // if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+      //   		wireframe_mode = !wireframe_mode;
 
 		    //rotationX
 		    if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS) rotationX += 1;
@@ -90,20 +95,33 @@ class InputManager {
 		    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 		        this->scene->cameras[0].position -= glm::normalize(glm::cross(camera_right, this->scene->cameras[0].target)) * cameraSpeed;
 			
+
 			vec3 actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0], actualPosition[1], actualPosition[2] - speedBall ));
+		    actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0] - speedBall, actualPosition[1], actualPosition[2] ));
+		    actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0], actualPosition[1], actualPosition[2] + speedBall ));
+		    actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0] + speedBall, actualPosition[1], actualPosition[2]));
+		    actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0], actualPosition[1] - speedBall, actualPosition[2]));
+		    actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		    if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
 		    	this->scene->objects[1]->transform->setLocalTranslation(vec3( actualPosition[0], actualPosition[1] + speedBall, actualPosition[2]));
 		}
+
+/*		void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+		{
+		    // Wireframe mode (touche W)
+		    if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+		        wireframe_mode = !wireframe_mode;
+		}*/
 
 		// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 		// ---------------------------------------------------------------------------------------------

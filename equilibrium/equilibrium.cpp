@@ -142,6 +142,7 @@ int main( void )
 
     Scene *scene = new Scene();
     InputManager *inputManager = new InputManager(window, scene);
+    // glfwSetKeyCallback(window, inputManager->key_callback);
     CAMERA camera = inputManager->scene->cameras[0]; 
 
     unique_ptr<Object> plane_uniquePtr = make_unique<Object>("objects/plane_surface.off", modelID, programID);
@@ -153,10 +154,10 @@ int main( void )
     ball->applyTexture(earth_texture, TextureID);
 
     terrain->transform->setLocalScale(vec3( 4., 4., 4. ));
-    //terrain->transform->setLocalRotation(vec3( -65., 0., 0. ));
+    terrain->transform->setLocalRotation(vec3( -65., 0., 0. ));
 
     terrain->addChild(move(ball_uniquePtr));
-    ball->transform->setLocalScale(vec3( 0.1, 0.1, 0.1 ));
+    ball->transform->setLocalScale(vec3( 0.03, 0.03, 0.03 ));
 
     scene->addObject(terrain);
     scene->addObject(ball);
@@ -170,6 +171,11 @@ int main( void )
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        if (inputManager->wireframe_mode)
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        else
+            glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
         // input
         // -----
         inputManager->processInput(deltaTime);
@@ -180,6 +186,15 @@ int main( void )
 
         // Use our shader
         glUseProgram(programID);
+
+        cout << "height : " << ball->heightInTriangle(terrain->mesh) << endl;
+
+        vec3 actualBallPosition = ball->transform->getLocalTranslation();
+        ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, ball->heightInTriangle(terrain->mesh)))/*+ noeudElephant.mesh.radius * noeudElephant.transform.scale[2]*/;
+        //ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, 0.))/*+ noeudElephant.mesh.radius * noeudElephant.transform.scale[2]*/;
+
+        //ball->triangleIndexOnPosition(terrain->mesh);
+        //cout << ball->transform->getLocalTranslation().x << " " << ball->transform->getLocalTranslation().y << " " << ball->transform->getLocalTranslation().z << endl;
 
         terrain->updateSelfAndChild();
         ball->updateSelfAndChild();
