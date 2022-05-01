@@ -58,7 +58,7 @@ public:
 
     void applyTexture(GLuint, GLuint);
 
-    void draw();
+    virtual void draw();
 };
 
 #endif

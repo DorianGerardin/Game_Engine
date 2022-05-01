@@ -143,9 +143,12 @@ int main(void)
     // --------------------------------------------------------------------------------------------
 
     Scene *scene = new Scene();
-    InputManager *inputManager = new InputManager(window, scene);
+    /*InputManager *inputManager = new InputManager(window, scene);*/
     // glfwSetKeyCallback(window, inputManager->key_callback);
-    CAMERA camera = inputManager->scene->cameras[0];
+    //CAMERA camera = inputManager->scene->cameras[0];
+
+    unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);    
+    LightObject *light = light_uniquePtr.get();    
 
     unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("objects/plane_surface.off", modelID, programID);
     GameObject *terrain = plane_uniquePtr.get();
@@ -153,16 +156,34 @@ int main(void)
     unique_ptr<GameObject> ball_uniquePtr = make_unique<GameObject>("sphere", 50., modelID, programID);
     GameObject *ball = ball_uniquePtr.get();
 
+    // CameraObject *cam = scene->cameras2[0];
+    //vec3 position = vec3(1.75f, 1.f, 4.5f);
+    vec3 target = vec3(0.0f, 0.0f, -1.0f);
+    vec3 up = vec3(0.0f, 1.0f,  0.0f);
+    unique_ptr<CameraObject> defaultCamera_ptr = make_unique<CameraObject>(target, up);
+    CameraObject *cam = defaultCamera_ptr.get();
+
     ball->applyTexture(earth_texture, TextureID);
+    terrain->applyTexture(rock_texture, TextureID);
 
     terrain->transform->setLocalScale(vec3(4., 4., 4.));
     terrain->transform->setLocalRotation(vec3(-65., 0., 0.));
 
-    terrain->addChild(move(ball_uniquePtr));
     ball->transform->setLocalScale(vec3(0.03, 0.03, 0.03));
+    ball->transform->setLocalTranslation(vec3(.5, .5, 0));
 
+    cam->transform->setLocalTranslation(vec3(0, -7, 10));
+    cam->transform->setLocalRotation(vec3(90, 0, 0));
+
+    terrain->addChild(move(ball_uniquePtr));
+    ball->addChild(move(defaultCamera_ptr));
+
+    scene->addLight(light);
     scene->addObject(terrain);
     scene->addObject(ball);
+    scene->addCamera2(cam);
+
+    InputManager *inputManager = new InputManager(window, cam, scene);
 
     do
     {
@@ -182,7 +203,7 @@ int main(void)
         // input
         // -----
         inputManager->processInput(deltaTime);
-        CAMERA camera = inputManager->scene->cameras[0];
+        //CAMERA camera = inputManager->scene->cameras[0];
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -190,27 +211,31 @@ int main(void)
         // Use our shader
         glUseProgram(programID);
 
+        GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");    
+        glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
+
         vec3 actualBallPosition = ball->transform->getLocalTranslation();
-
-        /*+ noeudElephant.mesh.radius * noeudElephant.transform.scale[2]*/
         ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, ball->heightInTriangle(terrain->mesh) + 1.0 * ball->transform->getLocalScale().x));
-        // ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, 0.));
 
-        // ball->triangleIndexOnPosition(terrain->mesh);
-        // cout << ball->transform->getLocalTranslation().x << " " << ball->transform->getLocalTranslation().y << " " << ball->transform->getLocalTranslation().z << endl;
+        vec3 actualCamRotation = cam->transform->getLocalRotation();
+        cam->transform->setLocalRotation(vec3(actualCamRotation.x, actualCamRotation.y, actualCamRotation.z));
 
         terrain->updateSelfAndChild();
         ball->updateSelfAndChild();
 
         //-------------------------------------------------------------------------------------------------
 
-        glm::mat4 viewMatrix = glm::lookAt(camera.position, camera.position + camera.target, camera.up);
+        //cout << "cam world position : " << glm::to_string(cam->transform->getWorldTranslation()) << endl;
+
+        //glm::mat4 viewMatrix = glm::lookAt(cam->transform->getLocalTranslation(), cam->transform->getLocalTranslation() + cam->target, cam->up);
+        //glm::mat4 viewMatrix = glm::lookAt(cam->transform->getWorldTranslation(), cam->transform->getWorldTranslation() + cam->target, cam->up);
+        glm::mat4 viewMatrix = inverse(cam->transform->getModelMatrix());
 
         viewMatrix = glm::rotate(viewMatrix, glm::radians(rotationX), glm::vec3(1, 0, 0));
         viewMatrix = glm::rotate(viewMatrix, glm::radians(rotationY), glm::vec3(0, 1, 0));
         viewMatrix = glm::rotate(viewMatrix, glm::radians(rotationZ), glm::vec3(0, 0, 1));
 
-        glm::mat4 projectionMatrix = glm::perspective<float>(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 100.f);
+        glm::mat4 projectionMatrix = glm::perspective<float>(glm::radians(45.0f), 4.0f / 3.0f, 0.1f, 1000.f);
 
         GLint viewID = glGetUniformLocation(programID, "viewMatrix");
         GLint projectionID = glGetUniformLocation(programID, "projectionMatrix");

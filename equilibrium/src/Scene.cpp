@@ -11,9 +11,9 @@ Scene::Scene()
     defaultCamera.up = vec3(0.0f, 1.0f,  0.0f);
     this->addCamera(defaultCamera);
 
-    // unique_ptr<SimpleObject> defaultCamera_ptr = make_unique<CameraObject>(defaultPosition, defaultTarget, defaultUp);
+    // defaultCamera_ptr = make_unique<CameraObject>(defaultTarget, defaultUp);
     // CameraObject *defaultCamera = defaultCamera_ptr.get();
-    //this->addCamera(defaultCamera);
+    // this->addCamera2(defaultCamera);
 }
 
 Scene::~Scene()
@@ -31,14 +31,19 @@ void Scene::addCamera(CAMERA cam)
     this->cameras.push_back(cam);
 }
 
-// void Scene::addCamera(CameraObject* cam) {
-//     this->cameras.push_back(cam);
-// }
+void Scene::addCamera2(CameraObject* cam) {
+    this->cameras2.push_back(cam);
+}
+
+void Scene::addLight(LightObject *light){    
+    this->light = light;   
+}
 
 void Scene::draw()
 {
     for (int i = 0; i < objects.size(); i++)
     {
-        objects[i]->draw();
+        objects[i]->draw(); 
     }
+    light->draw();
 }

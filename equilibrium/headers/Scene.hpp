@@ -26,6 +26,8 @@ using namespace std;
 #include <common/texture.hpp>
 #include <memory>
 #include "GameObject.hpp"
+#include "CameraObject.hpp"
+#include "LightObject.hpp"
 
 struct CAMERA
 {
@@ -39,10 +41,13 @@ class Scene
 
 private:
     CAMERA defaultCamera;
-    //unique_ptr<SimpleObject> defaultCamera_ptr;
+    unique_ptr<CameraObject> defaultCamera_ptr;
+    LightObject *light;
+
 
 public:
     vector<GameObject *> objects;
+    vector<CameraObject *> cameras2;
     vector<CAMERA> cameras;
     //vector<SimpleObject*> cameras;
 
@@ -51,11 +56,15 @@ public:
 
     ~Scene();
 
+    //void addObject(GameObject *);
+    
     void addObject(GameObject *);
 
     void addCamera(CAMERA);
 
-    //void addCamera(CameraObject* cam);
+    void addCamera2(CameraObject* cam);
+
+    void addLight(LightObject *);
             
     void draw();
 };

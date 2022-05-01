@@ -104,6 +104,7 @@ void GameObject::draw()
     GLuint vertexbuffer;
     GLuint elementbuffer;
     GLuint uvbuffer;
+    GLuint normalbuffer;
 
     glUseProgram(this->shader);
 
@@ -119,6 +120,11 @@ void GameObject::draw()
     glGenBuffers(1, &vertexbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glBufferData(GL_ARRAY_BUFFER, this->mesh->indexed_vertices.size() * sizeof(vec3), &this->mesh->indexed_vertices[0], GL_STATIC_DRAW);
+
+    // normals
+    glGenBuffers(1, &normalbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glBufferData(GL_ARRAY_BUFFER, this->mesh->normals.size() * sizeof(vec3), &this->mesh->normals[0], GL_STATIC_DRAW);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &elementbuffer);
@@ -147,11 +153,32 @@ void GameObject::draw()
     else
         glUniform1i(hasTextureID, GL_FALSE);
 
+    //MATERIAL
+    GLint materialAmbientID = glGetUniformLocation(this->shader, "material.ambient");
+    glUniform3fv(materialAmbientID,1,  glm::value_ptr(this->mesh->material.ambient));
+    GLint materialDiffuseID = glGetUniformLocation(this->shader, "material.diffuse");
+    glUniform3fv(materialDiffuseID,  1,  glm::value_ptr(this->mesh->material.diffuse));
+    GLint materialSpecularID = glGetUniformLocation(this->shader, "material.specular");
+    glUniform3fv(materialSpecularID,1,  glm::value_ptr(this->mesh->material.specular));
+    GLint materialShininessID = glGetUniformLocation(this->shader, "material.shininess");
+    glUniform1f(materialShininessID, this->mesh->material.shininess);
+
     // DRAW
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
     glVertexAttribPointer(
         0,        // attribute
+        3,        // size
+        GL_FLOAT, // type
+        GL_FALSE, // normalized?
+        0,        // stride
+        (void *)0 // array buffer offset
+    );
+
+    glEnableVertexAttribArray(4);
+    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+    glVertexAttribPointer(
+        4,        // attribute
         3,        // size
         GL_FLOAT, // type
         GL_FALSE, // normalized?

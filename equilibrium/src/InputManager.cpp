@@ -9,6 +9,7 @@
 // Include GLFW
 #include <GLFW/glfw3.h>
 #include "../headers/Scene.hpp"
+#include "../headers/CameraObject.hpp"
 
 float rotationX = 0.;
 float rotationY = 0.;
@@ -24,12 +25,14 @@ class InputManager
 public:
 	GLFWwindow *window;
 	Scene *scene;
+	CameraObject *cam;
 	bool wireframe_mode = false;
 
 public:
-	InputManager(GLFWwindow *window, Scene *scene)
+	InputManager(GLFWwindow *window, CameraObject *cam, Scene *scene)
 	{
 		this->window = window;
+		this->cam = cam;
 		this->scene = scene;
 	}
 
@@ -89,21 +92,29 @@ public:
 		// Camera zoom in and out
 		float cameraSpeed = 25 * deltaTime;
 
+		Transform *camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-			this->scene->cameras[0].position -= cameraSpeed * this->scene->cameras[0].target;
+			//this->scene->cameras[0].position -= cameraSpeed * this->scene->cameras[0].target;
+			camTransform->translation -= cameraSpeed * this->cam->target;
+		camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
-			this->scene->cameras[0].position += cameraSpeed * this->scene->cameras[0].target;
+			camTransform->translation += cameraSpeed * this->cam[0].target;
+		camTransform = this->cam->transform;
 		// glfwSetScrollCallback(window, scroll_callback);
 
 		// TODO add translations
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-			this->scene->cameras[0].position += glm::normalize(glm::cross(this->scene->cameras[0].up, this->scene->cameras[0].target)) * cameraSpeed;
+			camTransform->translation += glm::normalize(glm::cross(this->cam->up, this->cam->target)) * cameraSpeed;
+		camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-			this->scene->cameras[0].position -= glm::normalize(glm::cross(this->scene->cameras[0].up, this->scene->cameras[0].target)) * cameraSpeed;
+			camTransform->translation -= glm::normalize(glm::cross(this->cam->up, this->cam->target)) * cameraSpeed;
+		camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-			this->scene->cameras[0].position += glm::normalize(glm::cross(camera_right, this->scene->cameras[0].target)) * cameraSpeed;
+			camTransform->translation += glm::normalize(glm::cross(camera_right, this->cam->target)) * cameraSpeed;
+		camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-			this->scene->cameras[0].position -= glm::normalize(glm::cross(camera_right, this->scene->cameras[0].target)) * cameraSpeed;
+			camTransform->translation -= glm::normalize(glm::cross(camera_right, this->cam->target)) * cameraSpeed;
+		camTransform = this->cam->transform;
 
 		vec3 actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)

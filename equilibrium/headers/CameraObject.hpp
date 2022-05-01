@@ -1,3 +1,6 @@
+#ifndef CAMERAOBJECT_HPP
+#define CAMERAOBJECT_HPP
+
 #include "SimpleObject.hpp"
 
 class CameraObject : virtual public SimpleObject {
@@ -8,6 +11,9 @@ class CameraObject : virtual public SimpleObject {
         vec3 up;
 
     public:
-        CameraObject(vec3, vec3, vec3);
+        CameraObject(vec3, vec3);
+        CameraObject();
 
 };
+
+#endif

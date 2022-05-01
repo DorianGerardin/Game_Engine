@@ -15,14 +15,23 @@
 // Include GLM
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/io.hpp>
+#include <glm/gtx/string_cast.hpp>
 #include <iostream>
 
 using namespace glm;
+using namespace std;
 
 #include <common/shader.hpp>
 #include <common/objloader.hpp>
 #include <common/vboindexer.hpp>
 #include <common/texture.hpp>
+
+// template <typename GLMType, typename = decltype(glm::to_string(std::declval<GLMType>()))>
+// std::ostream &operator<<(std::ostream &out, const GLMType &g)
+// {
+//     return out << glm::to_string(g);
+// }
 
 class Transform
 {
@@ -34,6 +43,7 @@ public:
     vec3 translation; // translation
     // Global space information concatenate in matrix
     mat4 modelMatrix = mat4(1.0f);
+    mat4 worldModelMatrix = mat4(1.0f);
 
     vec3 selfScale;       // scale
     vec3 selfRotation;    // rotation
@@ -70,6 +80,8 @@ public:
 
     // Getters
     const glm::vec3 &getLocalTranslation() const;
+
+    vec3 getWorldTranslation();
 
     const glm::vec3 &getLocalRotation() const;
 
