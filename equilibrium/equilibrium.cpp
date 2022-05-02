@@ -115,7 +115,9 @@ int main(void)
     // --------------------------------------------------------------------------------------------
 
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
+    GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
     GLuint rock_texture = loadBMP_custom("textures/rock.bmp");
+    GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     glActiveTexture(GL_TEXTURE0);
@@ -137,7 +139,7 @@ int main(void)
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-
+    float earthGravity = 9.81;
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
     // --------------------------------------------------------------------------------------------
@@ -145,43 +147,59 @@ int main(void)
     Scene *scene = new Scene();
     /*InputManager *inputManager = new InputManager(window, scene);*/
     // glfwSetKeyCallback(window, inputManager->key_callback);
-    //CAMERA camera = inputManager->scene->cameras[0];
+    // CAMERA camera = inputManager->scene->cameras[0];
 
-    unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);    
-    LightObject *light = light_uniquePtr.get();    
+    unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light = light_uniquePtr.get();
 
-    unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("objects/plane_surface.off", modelID, programID);
+    // unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("GO_Plan", "objects/plane_surface.off", modelID, programID);
+    unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("GO_Plan", "objects/plane_surface_relief.off", modelID, programID);
     GameObject *terrain = plane_uniquePtr.get();
+    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 50., modelID, programID);
+    GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<GameObject> ball_uniquePtr = make_unique<GameObject>("sphere", 50., modelID, programID);
-    GameObject *ball = ball_uniquePtr.get();
+    unique_ptr<GameObject> Earth_uniquePtr = make_unique<GameObject>("GO_Earth", SPHERE, 50., modelID, programID);
+    GameObject *Earth = Earth_uniquePtr.get();
 
     // CameraObject *cam = scene->cameras2[0];
-    //vec3 position = vec3(1.75f, 1.f, 4.5f);
+    // vec3 position = vec3(1.75f, 1.f, 4.5f);
     vec3 target = vec3(0.0f, 0.0f, -1.0f);
-    vec3 up = vec3(0.0f, 1.0f,  0.0f);
-    unique_ptr<CameraObject> defaultCamera_ptr = make_unique<CameraObject>(target, up);
+    vec3 up = vec3(0.0f, 1.0f, 0.0f);
+    unique_ptr<CameraObject> defaultCamera_ptr = make_unique<CameraObject>("CO_Camera", target, up);
     CameraObject *cam = defaultCamera_ptr.get();
+    cam->ToDraw(false);
 
-    ball->applyTexture(earth_texture, TextureID);
-    terrain->applyTexture(rock_texture, TextureID);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50., modelID, programID, 0.00001f, -0.3f);
+    PhysicsObject *Sun = Sun_uniquePtr.get();
 
-    terrain->transform->setLocalScale(vec3(4., 4., 4.));
-    terrain->transform->setLocalRotation(vec3(-65., 0., 0.));
+    // terrain->applyTexture(rock_texture, TextureID);
+    EarthRotation->applyTexture(earth_texture, TextureID);
+    Earth->ToDraw(false);
+    EarthRotation->applyTexture(earth_texture, TextureID);
+    Sun->applyTexture(sun_texture, TextureID);
 
-    ball->transform->setLocalScale(vec3(0.03, 0.03, 0.03));
-    ball->transform->setLocalTranslation(vec3(.5, .5, 0));
+    terrain->transform->setLocalScale(vec3(4.0f, 4.0f, 4.0f));
+    terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
-    cam->transform->setLocalTranslation(vec3(0, -7, 10));
-    cam->transform->setLocalRotation(vec3(90, 0, 0));
+    Earth->transform->setLocalScale(vec3(0.05f, 0.05f, 0.05f));
+    // Earth->transform->setLocalTranslation(vec3(.5, .5, 0));
 
-    terrain->addChild(move(ball_uniquePtr));
-    ball->addChild(move(defaultCamera_ptr));
+    Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
+    Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, -2.0f));
+
+    cam->transform->setLocalTranslation(vec3(0, -20, 10));
+    cam->transform->setLocalRotation(vec3(70, 0, 0));
+
+    terrain->addChild(move(Earth_uniquePtr));
+    Earth->addChild(move(EarthRotation_uniquePtr));
+    Earth->addChild(move(defaultCamera_ptr));
 
     scene->addLight(light);
-    scene->addObject(terrain);
-    scene->addObject(ball);
     scene->addCamera2(cam);
+    scene->addObject(terrain);
+    scene->addObject(Earth);
+    scene->addObject(EarthRotation);
+    scene->addPhysicsObject(Sun);
 
     InputManager *inputManager = new InputManager(window, cam, scene);
 
@@ -203,7 +221,7 @@ int main(void)
         // input
         // -----
         inputManager->processInput(deltaTime);
-        //CAMERA camera = inputManager->scene->cameras[0];
+        // CAMERA camera = inputManager->scene->cameras[0];
 
         // Clear the screen
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -211,24 +229,27 @@ int main(void)
         // Use our shader
         glUseProgram(programID);
 
-        GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");    
+        //-------------------------------------------------------------------------------------------------
+        GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");
         glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
 
-        vec3 actualBallPosition = ball->transform->getLocalTranslation();
-        ball->transform->setLocalTranslation(vec3(actualBallPosition.x, actualBallPosition.y, ball->heightInTriangle(terrain->mesh) + 1.0 * ball->transform->getLocalScale().x));
+        scene->Step(deltaTime);
+        vec3 actualEarthPosition = Earth->transform->getLocalTranslation();
+        Earth->transform->setLocalTranslation(vec3(actualEarthPosition.x, actualEarthPosition.y, Earth->heightInTriangle(terrain->mesh) + 1.0 * Earth->transform->getLocalScale().x));
 
         vec3 actualCamRotation = cam->transform->getLocalRotation();
         cam->transform->setLocalRotation(vec3(actualCamRotation.x, actualCamRotation.y, actualCamRotation.z));
 
         terrain->updateSelfAndChild();
-        ball->updateSelfAndChild();
+        Earth->updateSelfAndChild();
+        Sun->updateSelfAndChild();
 
         //-------------------------------------------------------------------------------------------------
 
-        //cout << "cam world position : " << glm::to_string(cam->transform->getWorldTranslation()) << endl;
+        // cout << "cam world position : " << glm::to_string(cam->transform->getWorldTranslation()) << endl;
 
-        //glm::mat4 viewMatrix = glm::lookAt(cam->transform->getLocalTranslation(), cam->transform->getLocalTranslation() + cam->target, cam->up);
-        //glm::mat4 viewMatrix = glm::lookAt(cam->transform->getWorldTranslation(), cam->transform->getWorldTranslation() + cam->target, cam->up);
+        // glm::mat4 viewMatrix = glm::lookAt(cam->transform->getLocalTranslation(), cam->transform->getLocalTranslation() + cam->target, cam->up);
+        // glm::mat4 viewMatrix = glm::lookAt(cam->transform->getWorldTranslation(), cam->transform->getWorldTranslation() + cam->target, cam->up);
         glm::mat4 viewMatrix = inverse(cam->transform->getModelMatrix());
 
         viewMatrix = glm::rotate(viewMatrix, glm::radians(rotationX), glm::vec3(1, 0, 0));

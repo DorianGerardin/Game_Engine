@@ -94,7 +94,7 @@ public:
 
 		Transform *camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
-			//this->scene->cameras[0].position -= cameraSpeed * this->scene->cameras[0].target;
+			// this->scene->cameras[0].position -= cameraSpeed * this->scene->cameras[0].target;
 			camTransform->translation -= cameraSpeed * this->cam->target;
 		camTransform = this->cam->transform;
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
@@ -117,23 +117,47 @@ public:
 		camTransform = this->cam->transform;
 
 		vec3 actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		vec3 actualRotation = this->scene->objects[2]->transform->getLocalRotation();
+
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1], actualPosition[2] - speedBall));
+		}
 		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0] - speedBall, actualPosition[1], actualPosition[2]));
+			this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(0.0f, speedRotation, 0.0f));
+		}
 		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1], actualPosition[2] + speedBall));
+		}
 		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0] + speedBall, actualPosition[1], actualPosition[2]));
+			this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(0.0f, -speedRotation, 0.0f));
+		}
 		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1] - speedBall, actualPosition[2]));
+			this->scene->objects[2]->transform->setLocalRotation(vec3(actualRotation.x + speedRotation, 0.0f, 0.0f));
+		}
 		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
+		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
+		{
 			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1] + speedBall, actualPosition[2]));
+			this->scene->objects[2]->transform->setLocalRotation(vec3(actualRotation.x - speedRotation, 0.0f, 0.0f));
+			// this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(speedRotation, 0.0f, 0.0f));
+		}
 	}
 
 	/*		void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)

@@ -1,6 +1,8 @@
 #include "../headers/CameraObject.hpp"
 
-CameraObject::CameraObject(vec3 target, vec3 up) {
+CameraObject::CameraObject(string id, vec3 target, vec3 up)
+{
+    this->id = id;
     this->transform = new Transform();
     this->parent = nullptr;
     this->position = this->transform->getLocalTranslation();
@@ -8,6 +10,6 @@ CameraObject::CameraObject(vec3 target, vec3 up) {
     this->up = up;
 }
 
-CameraObject::CameraObject() {
-    
+CameraObject::CameraObject()
+{
 }

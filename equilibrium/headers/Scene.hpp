@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <algorithm> // std::find
 
 // Include GLEW
 #include <GL/glew.h>
@@ -28,6 +29,7 @@ using namespace std;
 #include "GameObject.hpp"
 #include "CameraObject.hpp"
 #include "LightObject.hpp"
+#include "PhysicsObject.hpp"
 
 struct CAMERA
 {
@@ -44,28 +46,31 @@ private:
     unique_ptr<CameraObject> defaultCamera_ptr;
     LightObject *light;
 
-
 public:
     vector<GameObject *> objects;
     vector<CameraObject *> cameras2;
     vector<CAMERA> cameras;
-    //vector<SimpleObject*> cameras;
+    // vector<SimpleObject*> cameras;
+    vector<PhysicsObject *> PhysicsObjectList;
 
 public:
     Scene();
 
     ~Scene();
 
-    //void addObject(GameObject *);
-    
+    // void addObject(GameObject *);
+
     void addObject(GameObject *);
 
     void addCamera(CAMERA);
-
-    void addCamera2(CameraObject* cam);
+    void addCamera2(CameraObject *cam);
 
     void addLight(LightObject *);
-            
+
+    void addPhysicsObject(PhysicsObject *);
+    void removePhysicsObject(PhysicsObject *);
+    void Step(float);
+
     void draw();
 };
 

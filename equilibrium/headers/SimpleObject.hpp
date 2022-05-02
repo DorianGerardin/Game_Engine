@@ -13,7 +13,7 @@
 #include <GLFW/glfw3.h>
 
 // Include GLM
-//#include <glm/glm.hpp>
+// #include <glm/glm.hpp>
 #include "glm/ext.hpp"
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -34,12 +34,16 @@ class SimpleObject
 {
 
 public:
+    string id = "";
     Transform *transform;
     SimpleObject *parent = nullptr;
     vector<unique_ptr<SimpleObject>> children;
+    bool toDraw = true;
 
 public:
     SimpleObject();
+
+    SimpleObject(string);
 
     ~SimpleObject();
 
@@ -55,6 +59,7 @@ public:
 
     SimpleObject *getParent();
 
+    void ToDraw(bool);
 };
 
 #endif

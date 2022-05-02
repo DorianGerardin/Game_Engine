@@ -81,6 +81,10 @@ add_executable(equilibrium
     equilibrium/headers/CameraObject.hpp
     equilibrium/src/LightObject.cpp
     equilibrium/headers/LightObject.hpp
+	equilibrium/src/PhysicsObject.cpp
+    equilibrium/headers/PhysicsObject.hpp
+	equilibrium/src/Collision.cpp
+    equilibrium/headers/Collision.hpp
 )
 target_link_libraries(equilibrium
 	${ALL_LIBS}

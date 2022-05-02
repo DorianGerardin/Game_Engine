@@ -1,7 +1,8 @@
 #include "../headers/GameObject.hpp"
 
-GameObject::GameObject(string filename, GLint modelID, GLuint shader)
+GameObject::GameObject(string id, string filename, GLint modelID, GLuint shader)
 {
+    this->id = id;
     transform = new Transform();
     this->mesh = new Mesh(filename, modelID);
     this->shader = shader;
@@ -9,8 +10,9 @@ GameObject::GameObject(string filename, GLint modelID, GLuint shader)
     this->hasTexture = false;
 }
 
-GameObject::GameObject(string meshType, float size, GLint modelID, GLuint shader)
+GameObject::GameObject(string id, int meshType, float size, GLint modelID, GLuint shader)
 {
+    this->id = id;
     this->transform = new Transform();
     this->mesh = new Mesh(meshType, size, modelID);
     this->parent = nullptr;
@@ -100,7 +102,6 @@ void GameObject::applyTexture(GLuint texture, GLuint textureID)
 
 void GameObject::draw()
 {
-
     GLuint vertexbuffer;
     GLuint elementbuffer;
     GLuint uvbuffer;
@@ -153,13 +154,13 @@ void GameObject::draw()
     else
         glUniform1i(hasTextureID, GL_FALSE);
 
-    //MATERIAL
+    // MATERIAL
     GLint materialAmbientID = glGetUniformLocation(this->shader, "material.ambient");
-    glUniform3fv(materialAmbientID,1,  glm::value_ptr(this->mesh->material.ambient));
+    glUniform3fv(materialAmbientID, 1, glm::value_ptr(this->mesh->material.ambient));
     GLint materialDiffuseID = glGetUniformLocation(this->shader, "material.diffuse");
-    glUniform3fv(materialDiffuseID,  1,  glm::value_ptr(this->mesh->material.diffuse));
+    glUniform3fv(materialDiffuseID, 1, glm::value_ptr(this->mesh->material.diffuse));
     GLint materialSpecularID = glGetUniformLocation(this->shader, "material.specular");
-    glUniform3fv(materialSpecularID,1,  glm::value_ptr(this->mesh->material.specular));
+    glUniform3fv(materialSpecularID, 1, glm::value_ptr(this->mesh->material.specular));
     GLint materialShininessID = glGetUniformLocation(this->shader, "material.shininess");
     glUniform1f(materialShininessID, this->mesh->material.shininess);
 
@@ -190,6 +191,7 @@ void GameObject::draw()
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
 
     // Draw the triangles !
+
     glDrawElements(
         GL_TRIANGLES,               // mode
         this->mesh->indices.size(), // count

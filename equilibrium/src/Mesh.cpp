@@ -15,7 +15,8 @@ string Mesh::getFileExt(const string &s)
 Mesh::Mesh(string filename, GLint modelID)
 {
     string extension = getFileExt(filename);
-    if (!extension.compare("off")) {
+    if (!extension.compare("off"))
+    {
         loadOFF(filename, this->indexed_vertices, this->indices);
         this->calculate_normals();
     }
@@ -26,12 +27,12 @@ Mesh::Mesh(string filename, GLint modelID)
     this->initializeMaterial();
 }
 
-Mesh::Mesh(string tag, float size, GLint modelID)
+Mesh::Mesh(int type, float size, GLint modelID)
 {
     this->size = size;
-    this->generateMesh(tag);
+    this->objectType = type;
     this->modelID = modelID;
-    this->initializeMaterial();
+    this->generateMesh();
 }
 
 Mesh::~Mesh()
@@ -39,18 +40,19 @@ Mesh::~Mesh()
     delete this;
 }
 
-void Mesh::initializeMaterial(){
-    this->material.ambient = vec3(0.6, 0.5, 0.3) ; // make everything yellowish by default
-    this->material.diffuse = vec3(1.) ; 
+void Mesh::initializeMaterial()
+{
+    this->material.ambient = vec3(0.6, 0.5, 0.3); // make everything yellowish by default
+    this->material.diffuse = vec3(1.);
     this->material.specular = vec3(1.);
     this->material.shininess = 0.5;
 }
 
-void Mesh::generateMesh(string meshType)
+void Mesh::generateMesh()
 {
-    if (meshType.compare("sphere") == 0)
+    if (this->objectType == SPHERE)
         this->generateSphere();
-    else if (meshType.compare("plane") == 0)
+    else if (this->objectType == PLANE)
         this->generatePlane();
     else
     {
@@ -152,40 +154,40 @@ void Mesh::generateSphere()
 
 void Mesh::calculate_normals()
 {
-    //vertice normals
-    // cout << "made it to calculate_normals" << endl;
-    // this->normals.resize(this->indexed_vertices.size());
-    // for (unsigned int i = 0; i < this->indexed_vertices.size (); i++)
-    //     this->normals[indices[i]] = vec3 (1.0, 1.0, 0.0);
-    // for (unsigned int i = 0; i < this->indices.size (); i+=3) {
-    //     vec3 e01 = this->indexed_vertices[this->indices[i + 1]] -  this->indexed_vertices[this->indices[i + 0]];
-    //     vec3 e02 = this->indexed_vertices[this->indices[i + 2]] -  this->indexed_vertices[this->indices[i + 0]];
-    //     vec3 n = cross(e01, e02);
-    //     n = normalize(n);
-    //     for (unsigned int j = 0; j < 3; j++)
-    //         this->normals[this->indices[i + j]] += n;
-    // }
-    // for (unsigned int i = 0; i < this->indexed_vertices.size (); i++){
-    //     this->normals[this->indices[i]] = normalize(this->normals[this->indices[i]]);
-    //     // cout << this->indexed_vertices[this->indices[i]].x
-    //     //     << this->indexed_vertices[this->indices[i]].y
-    //     //     << this->indexed_vertices[this->indices[i]].z << endl;
-    // }
+    // vertice normals
+    //  cout << "made it to calculate_normals" << endl;
+    //  this->normals.resize(this->indexed_vertices.size());
+    //  for (unsigned int i = 0; i < this->indexed_vertices.size (); i++)
+    //      this->normals[indices[i]] = vec3 (1.0, 1.0, 0.0);
+    //  for (unsigned int i = 0; i < this->indices.size (); i+=3) {
+    //      vec3 e01 = this->indexed_vertices[this->indices[i + 1]] -  this->indexed_vertices[this->indices[i + 0]];
+    //      vec3 e02 = this->indexed_vertices[this->indices[i + 2]] -  this->indexed_vertices[this->indices[i + 0]];
+    //      vec3 n = cross(e01, e02);
+    //      n = normalize(n);
+    //      for (unsigned int j = 0; j < 3; j++)
+    //          this->normals[this->indices[i + j]] += n;
+    //  }
+    //  for (unsigned int i = 0; i < this->indexed_vertices.size (); i++){
+    //      this->normals[this->indices[i]] = normalize(this->normals[this->indices[i]]);
+    //      // cout << this->indexed_vertices[this->indices[i]].x
+    //      //     << this->indexed_vertices[this->indices[i]].y
+    //      //     << this->indexed_vertices[this->indices[i]].z << endl;
+    //  }
 
     this->normals.clear();
     // cout << (int)this->indices.size()/3 << endl;
-    this->normals.resize((int)this->indices.size()/3);
-    //TODO: implémenter le calcul des normales par face
-    //Attention commencer la fonction par triangle_normals.clear();
-    //Iterer sur les triangles
-    vec3 e_10,e_20,n;
-    for (int i = 0; i < (int)this->indices.size(); i+=3){
+    this->normals.resize((int)this->indices.size() / 3);
+    // TODO: implémenter le calcul des normales par face
+    // Attention commencer la fonction par triangle_normals.clear();
+    // Iterer sur les triangles
+    vec3 e_10, e_20, n;
+    for (int i = 0; i < (int)this->indices.size(); i += 3)
+    {
         // cout << i << endl;
         e_10 = this->indexed_vertices[this->indices[i + 1]] - this->indexed_vertices[this->indices[i]];
         e_20 = this->indexed_vertices[this->indices[i + 2]] - this->indexed_vertices[this->indices[i]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
-        this->normals[i/3] = cross(e_10, e_20);  
+        this->normals[i / 3] = cross(e_10, e_20);
     }
-
 }

@@ -21,7 +21,16 @@
 using namespace glm;
 using namespace std;
 
-struct Material {
+enum Type
+{
+    MESH,
+    SPHERE,
+    CUBE,
+    PLANE
+};
+
+struct Material
+{
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
@@ -43,16 +52,18 @@ public:
     GLuint texture, textureID;
     GLint modelID;
 
+    int objectType = -1;
+
     Material material;
 
 public:
-    Mesh(string, float, GLint);
+    Mesh(int, float, GLint);
     Mesh(string, GLint);
     ~Mesh();
 
 private:
     string getFileExt(const string &);
-    void generateMesh(string);
+    void generateMesh();
     void generatePlane();
     void generateSphere();
     void calculate_normals();

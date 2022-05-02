@@ -40,9 +40,9 @@ public:
     bool hasTexture;
 
 public:
-    GameObject(string, GLint, GLuint);
+    GameObject(string id, string filename, GLint, GLuint);
 
-    GameObject(string, float, GLint, GLuint);
+    GameObject(string id, int meshType, float, GLint, GLuint);
 
     GameObject();
 
