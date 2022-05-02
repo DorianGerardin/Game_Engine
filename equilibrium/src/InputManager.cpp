@@ -19,6 +19,15 @@ float speedRotation = 1.;
 
 float speedBall = 0.002;
 
+bool wireframe_mode = false;
+void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
+{
+	// Wireframe mode (touche W)
+	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
+	{
+		wireframe_mode = !wireframe_mode;
+	}
+}
 class InputManager
 {
 
@@ -26,7 +35,6 @@ public:
 	GLFWwindow *window;
 	Scene *scene;
 	CameraObject *cam;
-	bool wireframe_mode = false;
 
 public:
 	InputManager(GLFWwindow *window, CameraObject *cam, Scene *scene)
@@ -159,13 +167,6 @@ public:
 			// this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(speedRotation, 0.0f, 0.0f));
 		}
 	}
-
-	/*		void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
-			{
-				// Wireframe mode (touche W)
-				if (key == GLFW_KEY_Z && action == GLFW_PRESS)
-					wireframe_mode = !wireframe_mode;
-			}*/
 
 	// glfw: whenever the window size changed (by OS or user resize) this callback function executes
 	// ---------------------------------------------------------------------------------------------

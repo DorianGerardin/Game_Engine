@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <vector>
 #include <iostream>
+#include <limits> //infinity
 
 // Include GLEW
 #include <GL/glew.h>
@@ -115,9 +116,11 @@ int main(void)
     // --------------------------------------------------------------------------------------------
 
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
+    GLuint moon_texture = loadBMP_custom("textures/moonTexture.bmp");
     GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
     GLuint rock_texture = loadBMP_custom("textures/rock.bmp");
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
+    GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     glActiveTexture(GL_TEXTURE0);
@@ -140,26 +143,19 @@ int main(void)
     double lastTime = glfwGetTime();
     int nbFrames = 0;
     float earthGravity = 9.81;
+
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
     // --------------------------------------------------------------------------------------------
 
     Scene *scene = new Scene();
     /*InputManager *inputManager = new InputManager(window, scene);*/
-    // glfwSetKeyCallback(window, inputManager->key_callback);
     // CAMERA camera = inputManager->scene->cameras[0];
 
+    // --------------------
+    // Déclaration des Objets
     unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
     LightObject *light = light_uniquePtr.get();
-
-    // unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("GO_Plan", "objects/plane_surface.off", modelID, programID);
-    unique_ptr<GameObject> plane_uniquePtr = make_unique<GameObject>("GO_Plan", "objects/plane_surface_relief.off", modelID, programID);
-    GameObject *terrain = plane_uniquePtr.get();
-    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 50., modelID, programID);
-    GameObject *EarthRotation = EarthRotation_uniquePtr.get();
-
-    unique_ptr<GameObject> Earth_uniquePtr = make_unique<GameObject>("GO_Earth", SPHERE, 50., modelID, programID);
-    GameObject *Earth = Earth_uniquePtr.get();
 
     // CameraObject *cam = scene->cameras2[0];
     // vec3 position = vec3(1.75f, 1.f, 4.5f);
@@ -169,39 +165,64 @@ int main(void)
     CameraObject *cam = defaultCamera_ptr.get();
     cam->ToDraw(false);
 
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50., modelID, programID, 0.00001f, -0.3f);
+    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 0.0f, 0.0f);
+    // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
+    // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
+    PhysicsObject *terrain = plane_uniquePtr.get();
+    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 50.0f, modelID, programID);
+    GameObject *EarthRotation = EarthRotation_uniquePtr.get();
+
+    unique_ptr<GameObject> Earth_uniquePtr = make_unique<GameObject>("GO_Earth", SPHERE, 50.0f, modelID, programID);
+    GameObject *Earth = Earth_uniquePtr.get();
+
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonFall", SPHERE, 50.0f, modelID, programID, 0.0f, 0.0f);
+    PhysicsObject *Moon = Moon_uniquePtr.get();
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50.0f, modelID, programID, 0.00001f, -0.3f);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
-    // terrain->applyTexture(rock_texture, TextureID);
-    EarthRotation->applyTexture(earth_texture, TextureID);
+    // --------------------
+    // Textures
+    terrain->applyTexture(smiley_texture, TextureID);
     Earth->ToDraw(false);
     EarthRotation->applyTexture(earth_texture, TextureID);
+    Moon->applyTexture(moon_texture, TextureID);
     Sun->applyTexture(sun_texture, TextureID);
+
+    // --------------------
+    // Définition des liens de parenté entre objets
+    terrain->addChild(move(Earth_uniquePtr));
+    Earth->addChild(move(EarthRotation_uniquePtr));
+    Earth->addChild(move(defaultCamera_ptr));
+
+    // --------------------
+    // Transformatios des objets dans l'espace local
+    // light->transform->setLocalTranslation(vec3(0.0f, 0.0f, 0.0f));
+
+    cam->transform->setLocalTranslation(vec3(0, -20, 10));
+    cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain->transform->setLocalScale(vec3(4.0f, 4.0f, 4.0f));
     terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.05f, 0.05f, 0.05f));
-    // Earth->transform->setLocalTranslation(vec3(.5, .5, 0));
+
+    Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
+    Moon->transform->setLocalTranslation(vec3(2.0f, 0.5f, -2.0f));
 
     Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
     Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, -2.0f));
-
-    cam->transform->setLocalTranslation(vec3(0, -20, 10));
-    cam->transform->setLocalRotation(vec3(70, 0, 0));
-
-    terrain->addChild(move(Earth_uniquePtr));
-    Earth->addChild(move(EarthRotation_uniquePtr));
-    Earth->addChild(move(defaultCamera_ptr));
-
+    // --------------------
+    // Add Objects to Scene
     scene->addLight(light);
     scene->addCamera2(cam);
-    scene->addObject(terrain);
+    scene->addPhysicsObject(terrain);
     scene->addObject(Earth);
     scene->addObject(EarthRotation);
+    scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
 
     InputManager *inputManager = new InputManager(window, cam, scene);
+    glfwSetKeyCallback(window, key_callback);
 
     do
     {
@@ -213,7 +234,7 @@ int main(void)
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        if (inputManager->wireframe_mode)
+        if (wireframe_mode)
             glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         else
             glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -240,8 +261,11 @@ int main(void)
         vec3 actualCamRotation = cam->transform->getLocalRotation();
         cam->transform->setLocalRotation(vec3(actualCamRotation.x, actualCamRotation.y, actualCamRotation.z));
 
+        // --------------------
+        // Update Objects
         terrain->updateSelfAndChild();
         Earth->updateSelfAndChild();
+        Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();
 
         //-------------------------------------------------------------------------------------------------
@@ -264,6 +288,9 @@ int main(void)
         // glUniformMatrix4fv(modelID, 1, GL_FALSE, &modelMatrix[0][0]);
         glUniformMatrix4fv(viewID, 1, GL_FALSE, &viewMatrix[0][0]);
         glUniformMatrix4fv(projectionID, 1, GL_FALSE, &projectionMatrix[0][0]);
+
+        // --------------------
+        // Draw Scene
 
         scene->draw();
 

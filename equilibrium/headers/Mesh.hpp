@@ -45,7 +45,8 @@ class Mesh
 
 public:
     vector<vec3> indexed_vertices;
-    vector<vec3> normals;
+    vector<vec3> vericesNormals;
+    vector<vec3> faceNormals;
     vector<unsigned short> indices;
     vector<float> uv;
     float size;
@@ -65,6 +66,7 @@ private:
     string getFileExt(const string &);
     void generateMesh();
     void generatePlane();
+    void generateCube();
     void generateSphere();
     void calculate_normals();
     void initializeMaterial();

@@ -52,6 +52,7 @@ public:
     vector<CAMERA> cameras;
     // vector<SimpleObject*> cameras;
     vector<PhysicsObject *> PhysicsObjectList;
+    vector<Solver *> SolverList;
 
 public:
     Scene();
@@ -69,7 +70,10 @@ public:
 
     void addPhysicsObject(PhysicsObject *);
     void removePhysicsObject(PhysicsObject *);
-    void Step(float);
+    void addSolver(Solver *solver);
+    void removeSolver(Solver *solver);
+    void Step(float dt);
+    void ResolveCollisions(float dt);
 
     void draw();
 };

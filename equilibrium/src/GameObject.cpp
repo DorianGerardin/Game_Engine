@@ -10,6 +10,7 @@ GameObject::GameObject(string id, string filename, GLint modelID, GLuint shader)
     this->hasTexture = false;
 }
 
+// Sphere, Cube and Plane
 GameObject::GameObject(string id, int meshType, float size, GLint modelID, GLuint shader)
 {
     this->id = id;
@@ -125,7 +126,7 @@ void GameObject::draw()
     // normals
     glGenBuffers(1, &normalbuffer);
     glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->mesh->normals.size() * sizeof(vec3), &this->mesh->normals[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, this->mesh->vericesNormals.size() * sizeof(vec3), &this->mesh->vericesNormals[0], GL_STATIC_DRAW);
 
     // Generate a buffer for the indices as well
     glGenBuffers(1, &elementbuffer);

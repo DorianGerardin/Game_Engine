@@ -15,8 +15,10 @@ PhysicsObject::PhysicsObject(string id, string filename, GLint modelID, GLuint s
     this->useHeightMap = GL_FALSE;
     this->hasTexture = false;
 
-    Mass = mass;
-    Gravity = vec3(0.0f, gravity, 0.0f);
+    this->Mass = mass;
+    if (Mass == 0.0f)
+        this->isStatic = true;
+    this->Gravity = vec3(0.0f, gravity, 0.0f);
 }
 
 PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID, GLuint shader, float mass, float gravity)
@@ -29,7 +31,13 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
     this->useHeightMap = GL_FALSE;
     this->hasTexture = false;
 
-    Mass = mass;
-    Gravity = vec3(0.0f, gravity, 0.0f);
+    this->Mass = mass;
+    if (Mass == 0.0f)
+        this->isStatic = true;
+    this->Gravity = vec3(0.0f, gravity, 0.0f);
+    if (this->mesh->objectType == SPHERE)
+    {
+        // this->collider = SphereCollider();
+    }
 }
 PhysicsObject ::~PhysicsObject() {}

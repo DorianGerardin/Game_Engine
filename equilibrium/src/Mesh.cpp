@@ -12,6 +12,7 @@ string Mesh::getFileExt(const string &s)
     return ("");
 }
 
+// Import Maillage .off et .obj
 Mesh::Mesh(string filename, GLint modelID)
 {
     string extension = getFileExt(filename);
@@ -21,12 +22,13 @@ Mesh::Mesh(string filename, GLint modelID)
         this->calculate_normals();
     }
     if (!extension.compare("obj"))
-        loadOBJ(filename, this->indexed_vertices, this->indices, this->uv, this->normals);
+        loadOBJ(filename, this->indexed_vertices, this->indices, this->uv, this->vericesNormals);
 
     this->modelID = modelID;
     this->initializeMaterial();
 }
 
+// Générattion Maillage d'une primitive (plan, cube, sphère)
 Mesh::Mesh(int type, float size, GLint modelID)
 {
     this->size = size;
@@ -54,6 +56,8 @@ void Mesh::generateMesh()
         this->generateSphere();
     else if (this->objectType == PLANE)
         this->generatePlane();
+    else if (this->objectType == CUBE)
+        this->generateCube();
     else
     {
         printf("Ce maillage n'est pas supporté \n");
@@ -62,44 +66,83 @@ void Mesh::generateMesh()
     this->calculate_normals();
 }
 
+// void Mesh::generatePlane()
+// {
+
+//     int size = this->size;
+//     this->indexed_vertices.clear();
+//     this->indices.clear();
+//     this->uv.clear();
+
+//     int minZ = -1;
+//     int maxZ = 1;
+
+//     this->size = (int)floor(this->size);
+//     int length = 1;
+
+//     for (int i = 0; i < size; ++i)
+//     {
+//         for (int j = 0; j < size; ++j)
+//         {
+//             vec3 vertex = vec3(((float)i / (float)(this->size - 1) * length) - length / 2, ((float)j / (float)(this->size - 1) * length) - length / 2, 0);
+//             this->indexed_vertices.push_back(vertex);
+//             this->uv.push_back((float)j / (float)(size - 1));
+//             this->uv.push_back((float)i / (float)(size - 1));
+//         }
+//     }
+
+//     for (int i = 0; i < size - 1; ++i)
+//     {
+//         for (int j = 0; j < size - 1; ++j)
+//         {
+//             indices.push_back(i * size + j);
+//             indices.push_back(i * size + (j + 1));
+//             indices.push_back((i + 1) * size + j);
+
+//             indices.push_back(i * size + (j + 1));
+//             indices.push_back((i + 1) * size + (j + 1));
+//             indices.push_back((i + 1) * size + j);
+//         }
+//     }
+//     this->calculate_normals();
+// }
 void Mesh::generatePlane()
 {
 
-    int size = this->size;
     this->indexed_vertices.clear();
     this->indices.clear();
     this->uv.clear();
+    float length = this->size;
 
-    int minZ = -1;
-    int maxZ = 1;
+    this->indexed_vertices.push_back(vec3(0.0f, 0.0f, 0.0f));
+    this->indexed_vertices.push_back(vec3(length, 0.0f, 0.0f));
+    this->indexed_vertices.push_back(vec3(0.0f, length, 0.0f));
+    this->indexed_vertices.push_back(vec3(length, length, 0.0f));
 
-    this->size = (int)floor(this->size);
-    int length = 10;
+    // --------------------
 
-    for (int i = 0; i < size; ++i)
-    {
-        for (int j = 0; j < size; ++j)
-        {
-            vec3 vertex = vec3(((float)i / (float)(this->size - 1) * length) - length / 2, ((float)j / (float)(this->size - 1) * length) - length / 2, 0);
-            this->indexed_vertices.push_back(vertex);
-            this->uv.push_back((float)j / (float)(size - 1));
-            this->uv.push_back((float)i / (float)(size - 1));
-        }
-    }
+    this->uv.push_back(0.0f);
+    this->uv.push_back(0.0f);
 
-    for (int i = 0; i < size - 1; ++i)
-    {
-        for (int j = 0; j < size - 1; ++j)
-        {
-            indices.push_back(i * size + j);
-            indices.push_back(i * size + (j + 1));
-            indices.push_back((i + 1) * size + j);
+    this->uv.push_back(1.0f);
+    this->uv.push_back(0.0f);
 
-            indices.push_back(i * size + (j + 1));
-            indices.push_back((i + 1) * size + (j + 1));
-            indices.push_back((i + 1) * size + j);
-        }
-    }
+    this->uv.push_back(0.0f);
+    this->uv.push_back(1.0f);
+
+    this->uv.push_back(1.0f);
+    this->uv.push_back(1.0f);
+
+    // --------------------
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(3);
+
+    indices.push_back(0);
+    indices.push_back(3);
+    indices.push_back(2);
+
     this->calculate_normals();
 }
 
@@ -152,6 +195,11 @@ void Mesh::generateSphere()
     this->calculate_normals();
 }
 
+void Mesh::generateCube()
+{
+    // TODO
+}
+
 void Mesh::calculate_normals()
 {
     // vertice normals
@@ -174,9 +222,9 @@ void Mesh::calculate_normals()
     //      //     << this->indexed_vertices[this->indices[i]].z << endl;
     //  }
 
-    this->normals.clear();
+    this->faceNormals.clear();
     // cout << (int)this->indices.size()/3 << endl;
-    this->normals.resize((int)this->indices.size() / 3);
+    this->faceNormals.resize((int)this->indices.size() / 3);
     // TODO: implémenter le calcul des normales par face
     // Attention commencer la fonction par triangle_normals.clear();
     // Iterer sur les triangles
@@ -188,6 +236,6 @@ void Mesh::calculate_normals()
         e_20 = this->indexed_vertices[this->indices[i + 2]] - this->indexed_vertices[this->indices[i]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
-        this->normals[i / 3] = cross(e_10, e_20);
+        this->faceNormals[i / 3] = cross(e_10, e_20);
     }
 }

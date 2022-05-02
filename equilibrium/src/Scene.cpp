@@ -55,8 +55,24 @@ void Scene::removePhysicsObject(PhysicsObject *physicsObject)
         return;
     PhysicsObjectList.erase(itr);
 }
+void Scene::addSolver(Solver *solver)
+{
+    this->SolverList.push_back(solver);
+}
+void Scene::removeSolver(Solver *solver)
+{
+    if (!solver)
+        return;
+    auto itr = find(SolverList.begin(), SolverList.end(), solver);
+    if (itr == SolverList.end())
+        return;
+    SolverList.erase(itr);
+}
 void Scene::Step(float dt)
 {
+
+    ResolveCollisions(dt);
+
     for (PhysicsObject *obj : PhysicsObjectList)
     {
         if (obj->Mass > 0)
@@ -73,6 +89,45 @@ void Scene::Step(float dt)
 
             obj->Force = vec3(0, 0, 0); // reset net force at the end}
         }
+    }
+}
+
+void Scene::ResolveCollisions(float dt)
+{
+    // Generate List of collisions
+    std::vector<Collision> collisions;
+    for (PhysicsObject *a : PhysicsObjectList)
+    {
+        for (PhysicsObject *b : PhysicsObjectList)
+        {
+
+            if (a == b) // unique pairs
+                break;
+
+            if (!a->collider || !b->collider) // both have colliders
+            {
+                continue;
+            }
+
+            // cout << "AVANT" << endl;
+            // CollisionPoints points = a->collider->TestCollision(a->transform, b->collider, b->transform);
+            // cout << "APRES" << endl;
+
+            // if (points.HasCollision)
+            // {
+            //     Collision collision;
+            //     collision.ObjA = a;
+            //     collision.ObjB = b;
+            //     collision.Points = points;
+            //     collisions.emplace_back(collision);
+            // }
+        }
+    }
+
+    // Solve Collisions
+    for (Solver *solver : SolverList)
+    {
+        solver->Solve(collisions, dt);
     }
 }
 
