@@ -165,19 +165,19 @@ int main(void)
     CameraObject *cam = defaultCamera_ptr.get();
     cam->ToDraw(false);
 
-    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 0.0f, 0.0f);
+    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
     PhysicsObject *terrain = plane_uniquePtr.get();
-    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 50.0f, modelID, programID);
+
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("GO_Earth", SPHERE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    PhysicsObject *Earth = Earth_uniquePtr.get();
+    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 1.0f, modelID, programID);
     GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<GameObject> Earth_uniquePtr = make_unique<GameObject>("GO_Earth", SPHERE, 50.0f, modelID, programID);
-    GameObject *Earth = Earth_uniquePtr.get();
-
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 50.0f, modelID, programID, 0.0f, 0.0f);
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50.0f, modelID, programID, 0.00001f, -9.3f);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 0.00001f, -7.0f, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
     // --------------------
@@ -208,6 +208,7 @@ int main(void)
 
     Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
     Moon->transform->setLocalTranslation(vec3(2.0f, 0.5f, -2.0f));
+    // Moon->transform->setLocalTranslation(vec3(0.0f, 0.5f, -2.0f));
 
     Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
     Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, -2.0f));
@@ -215,11 +216,16 @@ int main(void)
     // Add Objects to Scene
     scene->addLight(light);
     scene->addCamera2(cam);
-    scene->addPhysicsObject(terrain);
+    scene->addObject(terrain);
     scene->addObject(Earth);
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
+
+    PositionSolver *positionSolver = new PositionSolver();
+    ImpulseSolver *impulseSolver = new ImpulseSolver();
+    scene->addSolver(positionSolver);
+    // scene->addSolver(impulseSolver);
 
     InputManager *inputManager = new InputManager(window, cam, scene);
     glfwSetKeyCallback(window, key_callback);
@@ -254,7 +260,6 @@ int main(void)
         GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");
         glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
 
-        scene->Step(deltaTime);
         vec3 actualEarthPosition = Earth->transform->getLocalTranslation();
         Earth->transform->setLocalTranslation(vec3(actualEarthPosition.x, actualEarthPosition.y, Earth->heightInTriangle(terrain->mesh) + 1.0 * Earth->transform->getLocalScale().x));
 
@@ -267,7 +272,9 @@ int main(void)
         Earth->updateSelfAndChild();
         Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();
+        // cout << Moon->transform->getWorldTranslation() << endl;
 
+        scene->Step(deltaTime);
         //-------------------------------------------------------------------------------------------------
 
         // cout << "cam world position : " << glm::to_string(cam->transform->getWorldTranslation()) << endl;

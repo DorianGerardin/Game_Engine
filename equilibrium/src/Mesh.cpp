@@ -173,9 +173,9 @@ void Mesh::generateSphere()
 
             phi = -M_PI / 2.0f + v * M_PI;
 
-            x = cos(theta) * cos(phi);
-            y = sin(theta) * cos(phi);
-            z = sin(phi);
+            x = this->size * cos(theta) * cos(phi);
+            y = this->size * sin(theta) * cos(phi);
+            z = this->size * sin(phi);
 
             this->indexed_vertices.push_back(vec3(x, y, z));
             this->uv.push_back(u);

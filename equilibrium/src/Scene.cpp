@@ -75,19 +75,19 @@ void Scene::Step(float dt)
 
     for (PhysicsObject *obj : PhysicsObjectList)
     {
-        if (obj->Mass > 0)
+        if (obj->isDynamic())
         {
             // Force de gravité = Poids : W = m*g
-            obj->Force += obj->Mass * obj->Gravity; // apply a force
+            obj->force += obj->mass * obj->gravity; // apply a force
 
-            obj->Vitesse += (obj->Force / obj->Mass) * dt;
+            obj->velocity += (obj->force / obj->mass) * dt;
 
-            obj->Position = obj->transform->getLocalTranslation();
-            obj->Position += obj->Vitesse * dt;
+            obj->position = obj->transform->getLocalTranslation();
+            obj->position += obj->velocity * dt;
             // cout << obj->Position << endl;
-            obj->transform->setLocalTranslation(obj->Position);
+            obj->transform->setLocalTranslation(obj->position);
 
-            obj->Force = vec3(0, 0, 0); // reset net force at the end}
+            obj->force = vec3(0, 0, 0); // reset net force at the end}
         }
     }
 }
@@ -113,12 +113,16 @@ void Scene::ResolveCollisions(float dt)
 
             if (points.HasCollision)
             {
-                // cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
+                cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
                 Collision collision;
                 collision.ObjA = a;
                 collision.ObjB = b;
                 collision.Points = points;
                 collisions.emplace_back(collision);
+            }
+            else
+            {
+                cout << "PAS DE COLLISION" << endl;
             }
         }
     }
