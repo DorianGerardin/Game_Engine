@@ -175,9 +175,9 @@ int main(void)
     unique_ptr<GameObject> Earth_uniquePtr = make_unique<GameObject>("GO_Earth", SPHERE, 50.0f, modelID, programID);
     GameObject *Earth = Earth_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonFall", SPHERE, 50.0f, modelID, programID, 0.0f, 0.0f);
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 50.0f, modelID, programID, 0.0f, 0.0f);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50.0f, modelID, programID, 0.00001f, -0.3f);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 50.0f, modelID, programID, 0.00001f, -9.3f);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
     // --------------------

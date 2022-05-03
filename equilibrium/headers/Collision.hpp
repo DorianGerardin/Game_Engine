@@ -9,7 +9,7 @@ struct CollisionPoints
     vec3 B;      // Furthest point of B into A
     vec3 Normal; // B – A normalized
     float Depth; // Length of B – A
-    bool HasCollision;
+    bool HasCollision = false;
 };
 
 //-------------------------------------------------------------------------------------------------

@@ -18,6 +18,8 @@
 #include <common/objloader.hpp>
 #include <iostream>
 
+#include <common/texture.hpp>
+
 using namespace glm;
 using namespace std;
 
@@ -29,12 +31,21 @@ enum Type
     PLANE
 };
 
+enum MaterialType
+{
+    WOOD,
+    EMERALD,
+    BLACK_RUBBER
+};
+
 struct Material
 {
     vec3 ambient;
     vec3 diffuse;
     vec3 specular;
     double shininess;
+
+    // MaterialType materialType;
 
     float index_medium = 1.;
     float transparency = 0.;
@@ -69,6 +80,7 @@ private:
     void generateCube();
     void generateSphere();
     void calculate_normals();
+    void setTexture(MaterialType materialType, GLint shader);
     void initializeMaterial();
 };
 

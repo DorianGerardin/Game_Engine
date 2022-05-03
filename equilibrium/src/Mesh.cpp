@@ -152,7 +152,8 @@ void Mesh::generateSphere()
     float x, y, z, u, v;
     float theta, phi;
 
-    int size = this->size;
+    // int size = this->size;
+    int size = 50;
 
     this->indexed_vertices.clear();
     this->indices.clear();
@@ -237,5 +238,20 @@ void Mesh::calculate_normals()
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
         this->faceNormals[i / 3] = cross(e_10, e_20);
+    }
+}
+
+void Mesh::setTexture(MaterialType materialType, GLint shader)
+{
+    this->textureID = glGetUniformLocation(shader, "texSampler");
+    switch (materialType)
+    {
+    case WOOD:
+        this->texture = loadBMP_custom("textures/wood1.bmp");
+        break;
+    case EMERALD:
+        break;
+    case BLACK_RUBBER:
+        break;
     }
 }

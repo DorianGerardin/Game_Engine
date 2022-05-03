@@ -109,18 +109,17 @@ void Scene::ResolveCollisions(float dt)
                 continue;
             }
 
-            cout << "AVANT" << endl;
             CollisionPoints points = a->collider->TestCollision(a->transform, b->collider, b->transform);
-            cout << "APRES" << endl;
 
-            // if (points.HasCollision)
-            // {
-            //     Collision collision;
-            //     collision.ObjA = a;
-            //     collision.ObjB = b;
-            //     collision.Points = points;
-            //     collisions.emplace_back(collision);
-            // }
+            if (points.HasCollision)
+            {
+                // cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
+                Collision collision;
+                collision.ObjA = a;
+                collision.ObjB = b;
+                collision.Points = points;
+                collisions.emplace_back(collision);
+            }
         }
     }
 
