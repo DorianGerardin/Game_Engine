@@ -113,7 +113,7 @@ void Scene::ResolveCollisions(float dt)
 
             if (points.HasCollision)
             {
-                cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
+                // cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
                 Collision collision;
                 collision.ObjA = a;
                 collision.ObjB = b;
@@ -122,7 +122,7 @@ void Scene::ResolveCollisions(float dt)
             }
             else
             {
-                cout << "PAS DE COLLISION" << endl;
+                // cout << "PAS DE COLLISION" << endl;
             }
         }
     }

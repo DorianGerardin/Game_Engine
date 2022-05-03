@@ -1,16 +1,21 @@
 #include "../headers/Collision.hpp"
 
-CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const Transform *ta, const SphereCollider *b, const Transform *tb)
+// ----------------------------------------------------------------------------------------------------
+// |                                      COLLISION POINTS                                            |
+// ----------------------------------------------------------------------------------------------------
+CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const Transform *ta,
+                                                const SphereCollider *b, const Transform *tb)
 {
-    vec3 A = a->Center + ta->getWorldTranslation();
-    vec3 B = b->Center + tb->getWorldTranslation();
+    // Attention :  doit être la translation MONDE
+    vec3 A = a->Center + ta->getLocalTranslation();
+    vec3 B = b->Center + tb->getLocalTranslation();
 
     // Attention :  doit être le scale MONDE
     float Ar = a->Radius * ta->getLocalScale().x;
     float Br = b->Radius * tb->getLocalScale().x;
 
-    cout << "A de centre " << A << " et de rayon " << Ar << endl;
-    cout << "B de centre " << B << " et de rayon " << Br << endl;
+    // cout << "A de centre " << A << " et de rayon " << Ar << endl;
+    // cout << "B de centre " << B << " et de rayon " << Br << endl;
 
     vec3 AtoB = B - A;
     vec3 BtoA = A - B;
@@ -36,6 +41,54 @@ CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const T
         true};
 }
 
+CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Transform *ta,
+                                               const PlaneCollider *b, const Transform *tb)
+{
+    // Attention :  doit être la translation MONDE
+    vec3 A = a->Center + ta->getLocalTranslation();
+
+    // Utiliser des quaternions
+    // vec3 N = b->Plane * tb->getLocalRotation();
+    // N = normalize(N);
+    vec3 N = normalize(b->Normal);
+
+    vec3 P = N * b->Distance + tb->getLocalTranslation();
+
+    // Attention :  doit être le scale MONDE
+    float Ar = a->Radius * ta->getLocalScale().x;
+
+    // distance du centre de la sphere à la surface du plan
+    float d = dot(A - P, N);
+
+    // cout << "A de centre " << A << " et de rayon " << Ar << endl;
+    // cout << "B de vecteur normal " << N << endl;
+    if (d > Ar)
+    {
+        return {
+            vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            0,
+            false};
+    }
+
+    vec3 B = A - N * d;
+    A = A - N * Ar;
+
+    return {
+        A, B,
+        normalize(N),
+        (B - A).length(),
+        true};
+}
+
+CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
+                                               const SphereCollider *b, const Transform *tb)
+{
+}
+
+// ------------------------------------------------------------------------------------------
+// |                                      SOLVER                                            |
+// ------------------------------------------------------------------------------------------
 void PositionSolver::Solve(vector<Collision> &collisions, float dt)
 {
     for (Collision &collision : collisions)
@@ -45,9 +98,12 @@ void PositionSolver::Solve(vector<Collision> &collisions, float dt)
         PhysicsObject *bBody = collision.ObjB;
 
         vec3 resolution = collision.Points.B - collision.Points.A;
-        // cout << resolution << endl;
+        // cout << this->old_resolution - resolution << endl;
+        // if (resolution.length() < 0.1)
+        // {
         if (aBody->isDynamic())
         {
+            aBody->velocity -= resolution;
             vec3 aBodyNewTranslation = aBody->transform->getLocalTranslation() - resolution;
             aBody->transform->setLocalTranslation(aBodyNewTranslation);
         }
@@ -57,6 +113,11 @@ void PositionSolver::Solve(vector<Collision> &collisions, float dt)
             vec3 bBodyNewTranslation = bBody->transform->getLocalTranslation() + resolution;
             bBody->transform->setLocalTranslation(bBodyNewTranslation);
         }
+        // }
+        // else
+        // {
+        //     cout << "trop petit déplacement" << endl;
+        // }
     }
 }
 

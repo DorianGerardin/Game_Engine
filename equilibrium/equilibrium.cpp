@@ -177,7 +177,7 @@ int main(void)
 
     unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 0.00001f, -7.0f, false);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 0.00001f, -3.0f, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
     // --------------------
@@ -202,21 +202,23 @@ int main(void)
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain->transform->setLocalScale(vec3(4.0f, 4.0f, 4.0f));
-    terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
+    // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.05f, 0.05f, 0.05f));
+    Earth->transform->setLocalTranslation(vec3(0.5f, 0.0f, 0.0f));
 
     Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
-    Moon->transform->setLocalTranslation(vec3(2.0f, 0.5f, -2.0f));
-    // Moon->transform->setLocalTranslation(vec3(0.0f, 0.5f, -2.0f));
+    Moon->transform->setLocalTranslation(vec3(2.0f, 2.0f, 0.5f));
+    // Moon->transform->setLocalTranslation(vec3(0.0f, 2.0f, 1.5f));
 
     Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
-    Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, -2.0f));
+    // Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, 2.0f));
+    Sun->transform->setLocalTranslation(vec3(1.9f, 1.9f, 2.0f));
     // --------------------
     // Add Objects to Scene
     scene->addLight(light);
     scene->addCamera2(cam);
-    scene->addObject(terrain);
+    scene->addPhysicsObject(terrain);
     scene->addObject(Earth);
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
