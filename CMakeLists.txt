@@ -85,6 +85,7 @@ add_executable(equilibrium
     equilibrium/headers/PhysicsObject.hpp
 	equilibrium/src/Collision.cpp
     equilibrium/headers/Collision.hpp
+
 )
 target_link_libraries(equilibrium
 	${ALL_LIBS}

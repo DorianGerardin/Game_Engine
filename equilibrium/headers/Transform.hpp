@@ -81,7 +81,7 @@ public:
     // Getters
     const glm::vec3 &getLocalTranslation() const;
 
-    vec3 getWorldTranslation();
+    const vec3 getWorldTranslation() const;
 
     const glm::vec3 &getLocalRotation() const;
 

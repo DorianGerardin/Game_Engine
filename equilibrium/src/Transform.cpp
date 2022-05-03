@@ -65,8 +65,8 @@ void Transform::computeModelMatrix(const mat4 &parentGlobalModelMatrix)
     this->modelMatrix = parentGlobalModelMatrix * getLocalModelMatrix();
     this->worldModelMatrix = inverse(this->modelMatrix);
     this->m_isDirty = false;
-    //cout << "translation : " << this->translation[0] << " " << this->translation[1] << " " << this->translation[2] << endl;
-    //cout << "model matrix : " << glm::to_string(this->modelMatrix) << endl;
+    // cout << "translation : " << this->translation[0] << " " << this->translation[1] << " " << this->translation[2] << endl;
+    // cout << "model matrix : " << glm::to_string(this->modelMatrix) << endl;
 }
 
 // Setters
@@ -112,13 +112,13 @@ const glm::vec3 &Transform::getLocalTranslation() const
     return this->translation;
 }
 
-vec3 Transform::getWorldTranslation()
+const vec3 Transform::getWorldTranslation() const
 {
-    //cout << this->modelMatrix[3][0] << " " << this->modelMatrix[3][1] << " " << this->modelMatrix[3][2] << endl;
-    vec4 nulVec = vec4(vec3(0.),1);
+    // cout << this->modelMatrix[3][0] << " " << this->modelMatrix[3][1] << " " << this->modelMatrix[3][2] << endl;
+    vec4 nulVec = vec4(vec3(0.), 1);
     vec4 result = this->modelMatrix * nulVec;
-    //cout << "modelMatrix : " << glm::to_string(this->modelMatrix) << endl;
-    //cout << "result : " << glm::to_string(result) << endl;
+    // cout << "modelMatrix : " << glm::to_string(this->modelMatrix) << endl;
+    // cout << "result : " << glm::to_string(result) << endl;
     return vec3(result[0], result[1], result[2]);
 }
 

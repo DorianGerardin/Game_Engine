@@ -109,9 +109,9 @@ void Scene::ResolveCollisions(float dt)
                 continue;
             }
 
-            // cout << "AVANT" << endl;
-            // CollisionPoints points = a->collider->TestCollision(a->transform, b->collider, b->transform);
-            // cout << "APRES" << endl;
+            cout << "AVANT" << endl;
+            CollisionPoints points = a->collider->TestCollision(a->transform, b->collider, b->transform);
+            cout << "APRES" << endl;
 
             // if (points.HasCollision)
             // {

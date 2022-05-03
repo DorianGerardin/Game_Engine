@@ -17,8 +17,8 @@ public:
     bool isStatic;
     vec3 Gravity;
 
-    // SphereCollider *sphereCollider;
     Collider *collider;
+    // SphereCollider *sphereCollider;
 
 public:
     PhysicsObject();

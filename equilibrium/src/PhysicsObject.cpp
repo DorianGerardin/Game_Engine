@@ -37,7 +37,10 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
     this->Gravity = vec3(0.0f, gravity, 0.0f);
     if (this->mesh->objectType == SPHERE)
     {
-        // this->collider = SphereCollider();
+        SphereCollider *sphereCollider = new SphereCollider();
+        sphereCollider->Center = this->transform->getWorldTranslation();
+        sphereCollider->Radius = this->mesh->size;
+        this->collider = sphereCollider;
     }
 }
 PhysicsObject ::~PhysicsObject() {}

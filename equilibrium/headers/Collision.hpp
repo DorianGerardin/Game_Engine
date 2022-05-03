@@ -13,7 +13,7 @@ struct CollisionPoints
 };
 
 //-------------------------------------------------------------------------------------------------
-struct SphereCollider;
+class SphereCollider;
 class PhysicsObject;
 
 //-------------------------------------------------------------------------------------------------
@@ -21,7 +21,6 @@ class PhysicsObject;
 // namespace algo
 // {
 CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const Transform *ta, const SphereCollider *b, const Transform *tb);
-
 // CollisionPoints FindSpherePlaneCollisionPoints(
 //     const SphereCollider *a, const Transform *ta,
 //     const PlaneCollider *b, const Transform *tb);
@@ -31,8 +30,9 @@ CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const T
 //     const SphereCollider *b, const Transform *tb);
 // }
 
-struct Collider
+class Collider
 {
+public:
     virtual CollisionPoints TestCollision(
         const Transform *transform,
         const Collider *collider,
@@ -49,8 +49,9 @@ struct Collider
     //     const Transform *planeTransform) const = 0;
 };
 
-struct SphereCollider : Collider
+class SphereCollider : public Collider
 {
+public:
     vec3 Center;
     float Radius;
 
@@ -79,8 +80,9 @@ struct SphereCollider : Collider
     // }
 };
 
-// struct PlaneCollider : Collider
+// class PlaneCollider : Collider
 // {
+// public:
 //     vec3 Plane; // vecteur
 //     float Distance;
 
