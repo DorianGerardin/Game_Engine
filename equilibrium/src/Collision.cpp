@@ -103,7 +103,7 @@ void PositionSolver::Solve(vector<Collision> &collisions, float dt)
         // {
         if (aBody->isDynamic())
         {
-            aBody->velocity -= resolution;
+            // aBody->velocity -= resolution;
             vec3 aBodyNewTranslation = aBody->transform->getLocalTranslation() - resolution;
             aBody->transform->setLocalTranslation(aBodyNewTranslation);
         }
@@ -145,7 +145,7 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
         else
             aVitesse = vec3(0.0f, 0.0f, 0.0f);
         if (bBody)
-            bVitesse = aBody->velocity;
+            bVitesse = bBody->velocity;
         else
             bVitesse = vec3(0.0f, 0.0f, 0.0f);
 
@@ -194,13 +194,15 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
         nVitesse = dot(rVitesse, collision.Points.Normal);
 
         vec3 tangent = normalize(rVitesse - nVitesse * collision.Points.Normal);
+        if (isnan(tangent.x) || isnan(tangent.y) || isnan(tangent.z))
+            tangent = glm::vec3(0.0f);
         float fVitesse = dot(rVitesse, tangent);
 
         float aSF = aBody ? aBody->staticFriction : 0.0f;
         float bSF = bBody ? bBody->staticFriction : 0.0f;
         float aKF = aBody ? aBody->kineticFriction : 0.0f;
         float bKF = bBody ? bBody->kineticFriction : 0.0f;
-        float mu = vec2(aSF, bSF).length();
+        float mu = length(vec2(aSF, bSF));
 
         float f = -fVitesse / (aInvMasse + bInvMasse);
 
@@ -212,7 +214,7 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
 
         else
         {
-            mu = vec2(aKF, bKF).length();
+            mu = length(vec2(aKF, bKF));
             friction = -j * tangent * mu;
         }
 

@@ -19,9 +19,12 @@ public:
 
     Collider *collider;
 
-    float staticFriction = 0.5f;  // Static friction coefficient
-    float kineticFriction = 0.5f; // Kinetic friction coefficient
-    float restitution = 0.5f;     // Elasticity of collisions (bounciness)
+    float staticFriction = 0.2f;  // Static friction coefficient
+    float kineticFriction = 0.1f; // Kinetic friction coefficient
+    float restitution = 0.8f;     // Elasticity of collisions (bounciness)
+
+    MaterialType materialType;
+    MaterialType materialTypeOnSurface;
 
 public:
     PhysicsObject();

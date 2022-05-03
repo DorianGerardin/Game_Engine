@@ -165,7 +165,7 @@ int main(void)
     CameraObject *cam = defaultCamera_ptr.get();
     cam->ToDraw(false);
 
-    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 3.0f, true);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
     PhysicsObject *terrain = plane_uniquePtr.get();
@@ -175,9 +175,9 @@ int main(void)
     unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 1.0f, modelID, programID);
     GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 1.0f, -3.0f, false);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 0.00001f, -3.0f, false);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 1.0f, -3.0f, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
     // --------------------
@@ -213,7 +213,7 @@ int main(void)
 
     Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
     // Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, 2.0f));
-    Sun->transform->setLocalTranslation(vec3(1.9f, 1.9f, 2.0f));
+    Sun->transform->setLocalTranslation(vec3(1.8f, 1.8f, 2.0f));
     // --------------------
     // Add Objects to Scene
     scene->addLight(light);
@@ -227,7 +227,7 @@ int main(void)
     PositionSolver *positionSolver = new PositionSolver();
     ImpulseSolver *impulseSolver = new ImpulseSolver();
     scene->addSolver(positionSolver);
-    // scene->addSolver(impulseSolver);
+    scene->addSolver(impulseSolver);
 
     InputManager *inputManager = new InputManager(window, cam, scene);
     glfwSetKeyCallback(window, key_callback);
