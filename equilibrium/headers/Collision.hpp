@@ -15,6 +15,7 @@ struct CollisionPoints
 //-------------------------------------------------------------------------------------------------
 class SphereCollider;
 class PlaneCollider;
+class AABBCollider;
 class PhysicsObject;
 
 //-------------------------------------------------------------------------------------------------
@@ -23,6 +24,8 @@ CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const T
                                                 const SphereCollider *b, const Transform *tb);
 CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Transform *ta,
                                                const PlaneCollider *b, const Transform *tb);
+CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Transform *ta,
+                                              const AABBCollider *b, const Transform *tb);
 
 // CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
 //                                                const SphereCollider *b, const Transform *tb);
@@ -44,6 +47,11 @@ public:
         const Transform *transform,
         const PlaneCollider *plane,
         const Transform *planeTransform) const = 0;
+
+    virtual CollisionPoints TestCollision(
+        const Transform *transform,
+        const AABBCollider *aabb,
+        const Transform *aabbTransform) const = 0;
 };
 
 class SphereCollider : public Collider
@@ -74,6 +82,14 @@ public:
         const Transform *planeTransform) const override
     {
         return FindSpherePlaneCollisionPoints(this, transform, plane, planeTransform);
+    }
+
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const AABBCollider *aabb,
+        const Transform *aabbTransform) const override
+    {
+        return FindSphereAABBCollisionPoints(this, transform, aabb, aabbTransform);
     }
 };
 
@@ -120,6 +136,67 @@ public:
     {
         return {}; // No plane v plane
     }
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const AABBCollider *aabb,
+        const Transform *aabbTransform) const override
+    {
+        return {}; // No plane v aabb
+    }
+};
+
+class AABBCollider : public Collider
+{
+public:
+    vec3 minValue;
+    vec3 maxValue;
+
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const Collider *collider,
+        const Transform *colliderTransform) const override
+    {
+
+        return collider->TestCollision(colliderTransform, this, transform);
+    }
+
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const SphereCollider *sphere,
+        const Transform *sphereTransform) const override
+    {
+        // CollisionPoints points = sphere->TestCollision(sphereTransform, this, transform);
+
+        // // swap
+        // glm::vec3 T = points.A;
+        // points.A = points.B;
+        // points.B = T;
+
+        // points.Normal = -points.Normal;
+
+        // return points;
+
+        return FindSphereAABBCollisionPoints(sphere, transform, this, sphereTransform);
+    }
+
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const PlaneCollider *plane,
+        const Transform *planeTransform) const override
+    {
+        return {}; // No AABB v plane
+    }
+
+    CollisionPoints TestCollision(
+        const Transform *transform,
+        const AABBCollider *aabb,
+        const Transform *aabbTransform) const override
+    {
+        return {}; // No AABB v AABB
+    }
+
+    vec3 closestPointAABB(vec3 point) const;
+    float SqDistPointAABB(vec3 point) const;
 };
 
 //-------------------------------------------------------------------------------------------------

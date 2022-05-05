@@ -135,13 +135,13 @@ void Mesh::generatePlane()
 
     // --------------------
 
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(3);
+    this->indices.push_back(0);
+    this->indices.push_back(1);
+    this->indices.push_back(3);
 
-    indices.push_back(0);
-    indices.push_back(3);
-    indices.push_back(2);
+    this->indices.push_back(0);
+    this->indices.push_back(3);
+    this->indices.push_back(2);
 
     this->calculate_normals();
 }
@@ -198,7 +198,154 @@ void Mesh::generateSphere()
 
 void Mesh::generateCube()
 {
-    // TODO
+    this->indexed_vertices.clear();
+    this->indices.clear();
+    this->uv.clear();
+    // float length = this->size;
+    float length = this->size / 2.0f;
+
+    // cf. http://ilkinulas.github.io/development/unity/2016/05/06/uv-mapping.html
+
+    this->indexed_vertices.push_back(vec3(-length, length, -length));
+    this->indexed_vertices.push_back(vec3(-length, -length, -length));
+    this->indexed_vertices.push_back(vec3(length, length, -length));
+    this->indexed_vertices.push_back(vec3(length, -length, -length));
+
+    this->indexed_vertices.push_back(vec3(-length, -length, length));
+    this->indexed_vertices.push_back(vec3(length, -length, length));
+    this->indexed_vertices.push_back(vec3(-length, length, length));
+    this->indexed_vertices.push_back(vec3(length, length, length));
+
+    this->indexed_vertices.push_back(vec3(-length, length, -length));
+    this->indexed_vertices.push_back(vec3(length, length, -length));
+
+    this->indexed_vertices.push_back(vec3(-length, length, -length));
+    this->indexed_vertices.push_back(vec3(-length, length, length));
+
+    this->indexed_vertices.push_back(vec3(length, length, -length));
+    this->indexed_vertices.push_back(vec3(length, length, length));
+
+    // --------------------
+    // 4:3 ratio
+    // 0, 0.66f
+    this->uv.push_back(0.0f);
+    this->uv.push_back(0.66f);
+    // 0.25f, 0.66f
+    this->uv.push_back(0.25f);
+    this->uv.push_back(0.66f);
+    // 0, 0.33f
+    this->uv.push_back(0.0f);
+    this->uv.push_back(0.33f);
+    // 0.25f, 0.33f
+    this->uv.push_back(0.25f);
+    this->uv.push_back(0.33f);
+
+    // 0.5f, 0.66f
+    this->uv.push_back(0.5f);
+    this->uv.push_back(0.66f);
+    // 0.5f, 0.33f
+    this->uv.push_back(0.5f);
+    this->uv.push_back(0.33f);
+    // 0.75f, 0.66f
+    this->uv.push_back(0.75f);
+    this->uv.push_back(0.66f);
+    // 0.75f, 0.33f
+    this->uv.push_back(0.75f);
+    this->uv.push_back(0.33f);
+
+    // 1, 0.66f
+    this->uv.push_back(1.0f);
+    this->uv.push_back(0.66f);
+    // 1, 0.33f
+    this->uv.push_back(1.0f);
+    this->uv.push_back(0.33f);
+
+    // 0.25f, 1
+    this->uv.push_back(0.25f);
+    this->uv.push_back(1.0f);
+    // 0.5f, 1
+    this->uv.push_back(0.5f);
+    this->uv.push_back(1.0f);
+
+    // 0.25f, 0
+    this->uv.push_back(0.25f);
+    this->uv.push_back(0.0f);
+    // 0.5f, 0
+    this->uv.push_back(0.5f);
+    this->uv.push_back(0.0f);
+
+    // --------------------
+
+    // front
+    // 0, 2, 1,
+    // 1, 2, 3,
+    this->indices.push_back(0);
+    this->indices.push_back(2);
+    this->indices.push_back(1);
+
+    this->indices.push_back(1);
+    this->indices.push_back(2);
+    this->indices.push_back(3);
+
+    // back
+    // 4, 5, 6,
+    // 5, 7, 6,
+    this->indices.push_back(4);
+    this->indices.push_back(5);
+    this->indices.push_back(6);
+
+    this->indices.push_back(5);
+    this->indices.push_back(7);
+    this->indices.push_back(6);
+
+    // top
+    // 6, 7, 8,
+    // 7, 9, 8,
+    this->indices.push_back(6);
+    this->indices.push_back(7);
+    this->indices.push_back(8);
+
+    this->indices.push_back(7);
+    this->indices.push_back(9);
+    this->indices.push_back(8);
+
+    // bottom
+    // 1, 3, 4,
+    // 3, 5, 4,
+    this->indices.push_back(1);
+    this->indices.push_back(3);
+    this->indices.push_back(4);
+
+    this->indices.push_back(3);
+    this->indices.push_back(5);
+    this->indices.push_back(4);
+
+    // left
+    // 1, 11, 10,
+    // 1, 4, 11,
+    this->indices.push_back(1);
+    this->indices.push_back(11);
+    this->indices.push_back(10);
+
+    this->indices.push_back(1);
+    this->indices.push_back(4);
+    this->indices.push_back(11);
+
+    // right
+    // 3, 12, 5,
+    // 5, 12, 13
+    this->indices.push_back(3);
+    this->indices.push_back(12);
+    this->indices.push_back(5);
+
+    this->indices.push_back(5);
+    this->indices.push_back(12);
+    this->indices.push_back(13);
+
+    // cout << this->indexed_vertices.size() << endl;
+    // cout << this->uv.size() << endl;
+    // cout << this->indices.size() << endl;
+    this->calculate_normals();
 }
 
 void Mesh::calculate_normals()

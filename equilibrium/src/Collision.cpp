@@ -20,6 +20,7 @@ CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const T
     vec3 AtoB = B - A;
     vec3 BtoA = A - B;
 
+    // Pas de collision
     if (length(AtoB) > Ar + Br)
     {
         return {
@@ -34,10 +35,11 @@ CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const T
 
     AtoB = B - A;
 
+    // Collision
     return {
         A, B,
         normalize(AtoB),
-        AtoB.length(),
+        length(AtoB),
         true};
 }
 
@@ -62,6 +64,8 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
 
     // cout << "A de centre " << A << " et de rayon " << Ar << endl;
     // cout << "B de vecteur normal " << N << endl;
+
+    // Pas de collision
     if (d > Ar)
     {
         return {
@@ -74,6 +78,7 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
     vec3 B = A - N * d;
     A = A - N * Ar;
 
+    // Collision
     return {
         A, B,
         normalize(N),
@@ -85,6 +90,104 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
 //                                                const SphereCollider *b, const Transform *tb)
 // {
 // }
+
+// vec3 AABBCollider::closestPointAABB(vec3 point) const
+// {
+//     // For each coordinate axis, if the point coordinate value is outside box,
+//     // clamp it to the box, else keep it as is
+//     vec3 min = this->minValue;
+//     vec3 max = this->maxValue;
+//     vec3 q = vec3(0.0f, 0.0f, 0.0f);
+//     float v = 0;
+//     v = point.x;
+//     v = std::max(v, min.x);
+//     v = std::min(v, max.x);
+//     q.x = v;
+//     v = point.y;
+//     v = std::max(v, min.y);
+//     v = std::min(v, max.y);
+//     q.y = v;
+//     v = point.z;
+//     v = std::max(v, min.z);
+//     v = std::min(v, max.z);
+//     q.z = v;
+
+//     return q;
+// }
+
+// Game Physics Cookbook p.162
+vec3 AABBCollider::closestPointAABB(vec3 point) const
+{
+    vec3 result = point;
+    vec3 min = this->minValue;
+    vec3 max = this->maxValue;
+    // Clamp the closest point to the min point of the AABB:
+    result.x = (result.x < min.x) ? min.x : result.x;
+    result.y = (result.y < min.x) ? min.y : result.y;
+    result.z = (result.z < min.x) ? min.z : result.z;
+    // Clamp the closest point to the max point of the AABB:
+    result.x = (result.x > max.x) ? max.x : result.x;
+    result.y = (result.y > max.x) ? max.y : result.y;
+    result.z = (result.z > max.x) ? max.z : result.z;
+    return result;
+}
+float AABBCollider::SqDistPointAABB(vec3 point) const
+{
+    float result = length(this->closestPointAABB(point) - point);
+    return result;
+}
+CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Transform *ta,
+                                              const AABBCollider *b, const Transform *tb)
+{
+    float dist;
+
+    vec3 A = a->Center + ta->getLocalTranslation();
+    // Attention :  doit être le scale MONDE
+    float Ar = a->Radius * ta->getLocalScale().x;
+
+    // Find point (p) on AABB closest to Sphere center
+    vec3 p = b->closestPointAABB(A);
+
+    // Sphere and AABB intersect if the (squared) distance from sphere center to point (p)
+    // is less than the (squared) sphere radius
+    vec3 v = A - p;
+
+    if (dot(v, v) <= Ar * Ar)
+    {
+        // cout << "COLLISION" << endl;
+        dist = b->SqDistPointAABB(A);
+
+        // Calculate normal using sphere center a closest point on AABB
+        vec3 normal = normalize(p - A);
+
+        vec3 B = p - normal * Ar;
+        vec3 AtoB = B - A;
+
+        if (AtoB == vec3(0.0f, 0.0f, 0.0f))
+        {
+            // Sphere is inside AABB
+            AtoB = vec3(0.0f, 1.0f, 0.0f);
+        }
+
+        float dsqrd = length(AtoB);
+
+        return {
+            a->Center + ta->getLocalTranslation(), B,
+            normalize(AtoB),
+            length(AtoB),
+            true};
+    }
+    else
+    {
+        // cout << "PAS COLLISION" << endl;
+        // No intersection
+        return {
+            vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+            vec3(0.0f, 0.0f, 0.0f),
+            0,
+            false};
+    }
+}
 
 // ------------------------------------------------------------------------------------------
 // |                                      SOLVER                                            |

@@ -50,6 +50,22 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
         planeCollider->Distance = 0.000001f;
         this->collider = planeCollider;
     }
+    if (this->mesh->objectType == CUBE)
+    {
+        AABBCollider *aabbCollider = new AABBCollider();
+        float size_2 = this->mesh->size / 2.0f;
+
+        aabbCollider->minValue = vec3(-size_2, -size_2, -size_2);
+        aabbCollider->maxValue = vec3(size_2, size_2, size_2);
+        // aabbCollider->minValue = vec3(0.0f, 0.0f, 0.0f);
+        // aabbCollider->maxValue = vec3(this->mesh->size, this->mesh->size, this->mesh->size);
+        this->collider = aabbCollider;
+
+        // SphereCollider *sphereCollider = new SphereCollider();
+        // sphereCollider->Center = this->transform->getWorldTranslation();
+        // sphereCollider->Radius = 0.5f;
+        // this->collider = sphereCollider;
+    }
 }
 PhysicsObject ::~PhysicsObject() {}
 

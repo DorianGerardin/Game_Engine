@@ -121,6 +121,7 @@ int main(void)
     GLuint rock_texture = loadBMP_custom("textures/rock.bmp");
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
+    GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     glActiveTexture(GL_TEXTURE0);
@@ -172,15 +173,18 @@ int main(void)
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
     PhysicsObject *terrain = plane_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("GO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("PO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Earth = Earth_uniquePtr.get();
-    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 1.0f, modelID, programID);
+    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("GO_EarthRotation", SPHERE, 1.0f, modelID, programID);
     GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
     unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 10.0f, -gravity, false);
     PhysicsObject *Moon = Moon_uniquePtr.get();
     unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
+
+    unique_ptr<PhysicsObject> Cube_uniquePtr = make_unique<PhysicsObject>("GO_Cube", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *Cube = Cube_uniquePtr.get();
 
     // --------------------
     // Textures
@@ -189,6 +193,7 @@ int main(void)
     EarthRotation->applyTexture(earth_texture, TextureID);
     Moon->applyTexture(moon_texture, TextureID);
     Sun->applyTexture(sun_texture, TextureID);
+    Cube->applyTexture(dice_texture, TextureID);
 
     // --------------------
     // Définition des liens de parenté entre objets
@@ -207,7 +212,7 @@ int main(void)
     // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
-    Earth->transform->setLocalTranslation(vec3(0.5f, 0.0f, 0.0f));
+    Earth->transform->setLocalTranslation(vec3(2.5f, 0.0f, 0.0f));
 
     Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
     Moon->transform->setLocalTranslation(vec3(2.5f, 2.5f, 0.0f));
@@ -215,6 +220,9 @@ int main(void)
 
     Sun->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
     Sun->transform->setLocalTranslation(vec3(2.2f, 2.2f, 2.5f));
+
+    // Cube->transform->setLocalTranslation(vec3(0.5f, 0.5f, 0.5f));
+
     // --------------------
     // Add Objects to Scene
     scene->addLight(light);
@@ -224,6 +232,7 @@ int main(void)
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
+    scene->addPhysicsObject(Cube);
 
     PositionSolver *positionSolver = new PositionSolver();
     ImpulseSolver *impulseSolver = new ImpulseSolver();
@@ -277,6 +286,7 @@ int main(void)
         Earth->updateSelfAndChild();
         Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();
+        Cube->updateSelfAndChild();
         // cout << Moon->transform->getWorldTranslation() << endl;
 
         scene->Step(deltaTime);

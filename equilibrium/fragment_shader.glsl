@@ -44,27 +44,27 @@ void main(){
 	}
 
 
-	finalMaterial.ambient = color;
-	finalMaterial.diffuse = material.diffuse;
-	finalMaterial.specular = material.specular;
-	finalMaterial.shininess = material.shininess;
+	// finalMaterial.ambient = color;
+	// finalMaterial.diffuse = material.diffuse;
+	// finalMaterial.specular = material.specular;
+	// finalMaterial.shininess = material.shininess;
 
-	// ambient
-    vec3 ambient = light.material.ambient * finalMaterial.ambient;
+	// // ambient
+    // vec3 ambient = light.material.ambient * finalMaterial.ambient;
 
-	// diffuse 
-    vec3 norm = normalize(normal);
-    norm = vec3(1.);
-    norm = normalize(norm);
-    vec3 lightDir = normalize(light.position - FragPos);
-    float diff = max(dot(norm, lightDir), 0.0);
-    vec3 diffuse = light.material.diffuse * (diff * finalMaterial.diffuse);
+	// // diffuse 
+    // vec3 norm = normalize(normal);
+    // norm = vec3(1.);
+    // norm = normalize(norm);
+    // vec3 lightDir = normalize(light.position - FragPos);
+    // float diff = max(dot(norm, lightDir), 0.0);
+    // vec3 diffuse = light.material.diffuse * (diff * finalMaterial.diffuse);
 
-	// specular
-    vec3 viewDir = normalize(cameraPos - FragPos);
-    vec3 reflectDir = reflect(-lightDir, norm);  
-    float spec = pow(max(dot(viewDir, reflectDir), 0.0), finalMaterial.shininess);
-    vec3 specular = light.material.specular * (spec * finalMaterial.specular);  
+	// // specular
+    // vec3 viewDir = normalize(cameraPos - FragPos);
+    // vec3 reflectDir = reflect(-lightDir, norm);  
+    // float spec = pow(max(dot(viewDir, reflectDir), 0.0), finalMaterial.shininess);
+    // vec3 specular = light.material.specular * (spec * finalMaterial.specular);  
         
-    color = (ambient + diffuse + specular) * color;
+    // color = (ambient + diffuse + specular) * color;
 }
