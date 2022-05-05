@@ -26,9 +26,8 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
                                                const PlaneCollider *b, const Transform *tb);
 CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Transform *ta,
                                               const AABBCollider *b, const Transform *tb);
-
-// CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
-//                                                const SphereCollider *b, const Transform *tb);
+CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transform *ta,
+                                            const AABBCollider *b, const Transform *tb);
 
 class Collider
 {
@@ -192,11 +191,11 @@ public:
         const AABBCollider *aabb,
         const Transform *aabbTransform) const override
     {
-        return {}; // No AABB v AABB
+        return FindAABBAABBCollisionPoints(this, transform, aabb, aabbTransform);
     }
 
-    vec3 closestPointAABB(vec3 point) const;
-    float SqDistPointAABB(vec3 point) const;
+    vec3 closestPointAABB(const vec3 point, const Transform *tb) const;
+    float SqDistPointAABB(const vec3 point, const Transform *tb) const;
 };
 
 //-------------------------------------------------------------------------------------------------

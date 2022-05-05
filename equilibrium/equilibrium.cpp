@@ -183,8 +183,10 @@ int main(void)
     unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Cube_uniquePtr = make_unique<PhysicsObject>("GO_Cube", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    unique_ptr<PhysicsObject> Cube_uniquePtr = make_unique<PhysicsObject>("PO_Cube", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *Cube = Cube_uniquePtr.get();
+    unique_ptr<PhysicsObject> CubeFall_uniquePtr = make_unique<PhysicsObject>("PO_CubeFall", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    PhysicsObject *CubeFall = CubeFall_uniquePtr.get();
 
     // --------------------
     // Textures
@@ -194,6 +196,7 @@ int main(void)
     Moon->applyTexture(moon_texture, TextureID);
     Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
+    CubeFall->applyTexture(dice_texture, TextureID);
 
     // --------------------
     // Définition des liens de parenté entre objets
@@ -220,8 +223,11 @@ int main(void)
 
     Sun->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
     Sun->transform->setLocalTranslation(vec3(2.2f, 2.2f, 2.5f));
+    // Sun->transform->setLocalTranslation(vec3(1.7f, 0.5f, 2.5f));
 
-    // Cube->transform->setLocalTranslation(vec3(0.5f, 0.5f, 0.5f));
+    Cube->transform->setLocalTranslation(vec3(1.0f, 0.5f, 0.5f));
+
+    CubeFall->transform->setLocalTranslation(vec3(1.7f, 0.5f, 3.5f));
 
     // --------------------
     // Add Objects to Scene
@@ -233,6 +239,7 @@ int main(void)
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
     scene->addPhysicsObject(Cube);
+    scene->addPhysicsObject(CubeFall);
 
     PositionSolver *positionSolver = new PositionSolver();
     ImpulseSolver *impulseSolver = new ImpulseSolver();
@@ -287,6 +294,7 @@ int main(void)
         Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();
         Cube->updateSelfAndChild();
+        CubeFall->updateSelfAndChild();
         // cout << Moon->transform->getWorldTranslation() << endl;
 
         scene->Step(deltaTime);

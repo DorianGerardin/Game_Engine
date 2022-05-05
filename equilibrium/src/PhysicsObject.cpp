@@ -57,6 +57,7 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
 
         aabbCollider->minValue = vec3(-size_2, -size_2, -size_2);
         aabbCollider->maxValue = vec3(size_2, size_2, size_2);
+        // cout << "minValue = " << aabbCollider->minValue << ", maxValue = " << aabbCollider->maxValue << endl;
         // aabbCollider->minValue = vec3(0.0f, 0.0f, 0.0f);
         // aabbCollider->maxValue = vec3(this->mesh->size, this->mesh->size, this->mesh->size);
         this->collider = aabbCollider;
