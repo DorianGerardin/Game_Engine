@@ -142,7 +142,9 @@ int main(void)
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-    float earthGravity = 9.81;
+    float earthGravity = 9.81f;
+    // float gravity = earthGravity;
+    float gravity = 4.5f;
 
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
@@ -165,19 +167,19 @@ int main(void)
     CameraObject *cam = defaultCamera_ptr.get();
     cam->ToDraw(false);
 
-    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 3.0f, true);
+    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
     PhysicsObject *terrain = plane_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("GO_Earth", SPHERE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("GO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Earth = Earth_uniquePtr.get();
     unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("PO_EarthRotation", SPHERE, 1.0f, modelID, programID);
     GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 1.0f, -3.0f, false);
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 10.0f, -gravity, false);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 1.0f, -3.0f, false);
+    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
     // --------------------
@@ -190,7 +192,7 @@ int main(void)
 
     // --------------------
     // Définition des liens de parenté entre objets
-    terrain->addChild(move(Earth_uniquePtr));
+    // terrain->addChild(move(Earth_uniquePtr));
     Earth->addChild(move(EarthRotation_uniquePtr));
     Earth->addChild(move(defaultCamera_ptr));
 
@@ -201,25 +203,24 @@ int main(void)
     cam->transform->setLocalTranslation(vec3(0, -20, 10));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
-    terrain->transform->setLocalScale(vec3(4.0f, 4.0f, 4.0f));
+    terrain->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
     // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
-    Earth->transform->setLocalScale(vec3(0.05f, 0.05f, 0.05f));
+    Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
     Earth->transform->setLocalTranslation(vec3(0.5f, 0.0f, 0.0f));
 
     Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
-    Moon->transform->setLocalTranslation(vec3(2.0f, 2.0f, 0.5f));
+    Moon->transform->setLocalTranslation(vec3(2.5f, 2.5f, 0.0f));
     // Moon->transform->setLocalTranslation(vec3(0.0f, 2.0f, 1.5f));
 
-    Sun->transform->setLocalScale(vec3(0.1f, 0.1f, 0.1f));
-    // Sun->transform->setLocalTranslation(vec3(2.0f, 2.0f, 2.0f));
-    Sun->transform->setLocalTranslation(vec3(1.8f, 1.8f, 2.0f));
+    Sun->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
+    Sun->transform->setLocalTranslation(vec3(2.2f, 2.2f, 2.5f));
     // --------------------
     // Add Objects to Scene
     scene->addLight(light);
     scene->addCamera2(cam);
     scene->addPhysicsObject(terrain);
-    scene->addObject(Earth);
+    scene->addPhysicsObject(Earth);
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
@@ -234,6 +235,8 @@ int main(void)
 
     do
     {
+        // cout << Earth->transform->getWorldTranslation() << endl;
+        // cout << cam->transform->getWorldTranslation() << endl;
 
         // Measure speed
         // per-frame time logic
@@ -262,8 +265,8 @@ int main(void)
         GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");
         glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
 
-        vec3 actualEarthPosition = Earth->transform->getLocalTranslation();
-        Earth->transform->setLocalTranslation(vec3(actualEarthPosition.x, actualEarthPosition.y, Earth->heightInTriangle(terrain->mesh) + 1.0 * Earth->transform->getLocalScale().x));
+        // vec3 actualEarthPosition = Earth->transform->getLocalTranslation();
+        // Earth->transform->setLocalTranslation(vec3(actualEarthPosition.x, actualEarthPosition.y, Earth->heightInTriangle(terrain->mesh) + 1.0 * Earth->transform->getLocalScale().x));
 
         vec3 actualCamRotation = cam->transform->getLocalRotation();
         cam->transform->setLocalRotation(vec3(actualCamRotation.x, actualCamRotation.y, actualCamRotation.z));

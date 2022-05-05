@@ -11,20 +11,25 @@ class PhysicsObject : virtual public GameObject
 public:
     vec3 position = this->transform->getLocalTranslation();
     vec3 velocity = vec3(0.0f, 0.0f, 0.0f);
+    float maxVelocity = 2.5f;
     vec3 force;
 
     float mass;
     vec3 gravity;
+    vec3 acceleration = vec3(0.0f, 0.0f, 0.0f);
     bool is_static;
 
     Collider *collider;
 
-    float staticFriction = 0.2f;  // Static friction coefficient
-    float kineticFriction = 0.1f; // Kinetic friction coefficient
+    float staticFriction = 0.8f;  // Static friction coefficient
+    float kineticFriction = 0.7f; // Kinetic friction coefficient
     float restitution = 0.8f;     // Elasticity of collisions (bounciness)
 
     MaterialType materialType;
     MaterialType materialTypeOnSurface;
+
+    bool onSurface = false;
+    PhysicsObject *onSurfaceObject;
 
 public:
     PhysicsObject();

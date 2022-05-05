@@ -19,16 +19,13 @@ class PhysicsObject;
 
 //-------------------------------------------------------------------------------------------------
 
-// namespace algo
-// {
 CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const Transform *ta,
                                                 const SphereCollider *b, const Transform *tb);
 CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Transform *ta,
                                                const PlaneCollider *b, const Transform *tb);
 
-CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
-                                               const SphereCollider *b, const Transform *tb);
-// }
+// CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
+//                                                const SphereCollider *b, const Transform *tb);
 
 class Collider
 {
@@ -138,6 +135,7 @@ class Solver
 {
 public:
     virtual void Solve(vector<Collision> &collisions, float dt) = 0;
+    virtual string returnSolverID() = 0;
 };
 
 class PositionSolver : public Solver
@@ -145,16 +143,19 @@ class PositionSolver : public Solver
 public:
     // vec3 delta = vec3(0.1f, 0.1f, 0.1f);
     // float delta = 0.05f;
-    vec3 old_resolution = vec3(0.0f, 0.0f, 0.0f);
+    // vec3 old_resolution = vec3(0.0f, 0.0f, 0.0f);
 
 public:
     void Solve(vector<Collision> &collisions, float dt);
+    string returnSolverID() { return "PositionSolver"; }
 };
 
 class ImpulseSolver : public Solver
 {
+
 public:
     void Solve(vector<Collision> &collisions, float dt);
+    string returnSolverID() { return "ImpulseSolver"; }
 };
 
 #endif

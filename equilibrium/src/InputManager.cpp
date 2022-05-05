@@ -11,13 +11,19 @@
 #include "../headers/Scene.hpp"
 #include "../headers/CameraObject.hpp"
 
-float rotationX = 0.;
-float rotationY = 0.;
-float rotationZ = 0.;
-float rotationNoStop = 0.;
-float speedRotation = 1.;
+float rotationX = 0.0f;
+float rotationY = 0.0f;
+float rotationZ = 0.0f;
+float rotationNoStop = 0.0f;
+float speedRotation = 1.0f;
 
-float speedBall = 0.002;
+float speedBall = 0.05f;
+float speedJump = 10.0f;
+
+vec3 actualBallPosition, actualBallRotation;
+
+PhysicsObject *physicsBallObject;
+GameObject *textureBallObject;
 
 bool wireframe_mode = false;
 void key_callback(GLFWwindow *window, int key, int scancode, int action, int mods)
@@ -26,6 +32,31 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_Z && action == GLFW_PRESS)
 	{
 		wireframe_mode = !wireframe_mode;
+	}
+
+	// Jump
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
+	{
+		// cout << "Jump" << endl;
+
+		// Attention ! doit dépendre de la normale de la surface sur laquelle on est
+		physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump);
+	}
+
+	// Change to Material 1
+	if (key == GLFW_KEY_KP_1 && action == GLFW_PRESS)
+	{
+		cout << "Change to Material 1" << endl;
+	}
+	// Change to Material 2
+	if (key == GLFW_KEY_KP_2 && action == GLFW_PRESS)
+	{
+		cout << "Change to Material 2" << endl;
+	}
+	// Change to Material 3
+	if (key == GLFW_KEY_KP_3 && action == GLFW_PRESS)
+	{
+		cout << "Change to Material 3" << endl;
 	}
 }
 class InputManager
@@ -42,6 +73,9 @@ public:
 		this->window = window;
 		this->cam = cam;
 		this->scene = scene;
+
+		physicsBallObject = this->scene->PhysicsObjectList[1];
+		textureBallObject = this->scene->objects[2];
 	}
 
 	~InputManager()
@@ -61,10 +95,15 @@ public:
 			camera.position += cameraSpeed * camera.target;
 		}
 	}*/
+	void updateBallPositionAndRotation()
+	{
+		actualBallPosition = physicsBallObject->transform->getLocalTranslation();
+		// vec3 actualBallPosition = this->scene->PhysicsObjectList[0]->transform->getLocalTranslation();
+		actualBallRotation = textureBallObject->transform->getLocalRotation();
+	}
 
 	// process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 	// ---------------------------------------------------------------------------------------------------------
-
 	void processInput(float deltaTime)
 	{
 		// CAMERA camera = this->scene->cameras[0];
@@ -124,47 +163,29 @@ public:
 			camTransform->translation -= glm::normalize(glm::cross(camera_right, this->cam->target)) * cameraSpeed;
 		camTransform = this->cam->transform;
 
-		vec3 actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		vec3 actualRotation = this->scene->objects[2]->transform->getLocalRotation();
-
-		if (glfwGetKey(window, GLFW_KEY_KP_9) == GLFW_PRESS)
-		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1], actualPosition[2] - speedBall));
-		}
-		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
+		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0] - speedBall, actualPosition[1], actualPosition[2]));
-			this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(0.0f, speedRotation, 0.0f));
+			physicsBallObject->velocity += vec3(-speedBall, 0.0f, 0.0f);
+			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation, 0.0f));
 		}
-		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
-		if (glfwGetKey(window, GLFW_KEY_KP_7) == GLFW_PRESS)
-		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1], actualPosition[2] + speedBall));
-		}
-		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
-		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
-		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0] + speedBall, actualPosition[1], actualPosition[2]));
-			this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(0.0f, -speedRotation, 0.0f));
-		}
-		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
+		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1] - speedBall, actualPosition[2]));
-			this->scene->objects[2]->transform->setLocalRotation(vec3(actualRotation.x + speedRotation, 0.0f, 0.0f));
+			physicsBallObject->velocity += vec3(0.0f, -speedBall, 0.0f);
+			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation, 0.0f, 0.0f));
 		}
-		actualPosition = this->scene->objects[1]->transform->getLocalTranslation();
-		actualRotation = this->scene->objects[2]->transform->getLocalRotation();
+		updateBallPositionAndRotation();
+		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
+		{
+			physicsBallObject->velocity += vec3(speedBall, 0.0f, 0.0f);
+			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation, 0.0f));
+		}
+		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		{
-			this->scene->objects[1]->transform->setLocalTranslation(vec3(actualPosition[0], actualPosition[1] + speedBall, actualPosition[2]));
-			this->scene->objects[2]->transform->setLocalRotation(vec3(actualRotation.x - speedRotation, 0.0f, 0.0f));
-			// this->scene->objects[2]->transform->setLocalRotation(actualRotation - vec3(speedRotation, 0.0f, 0.0f));
+			physicsBallObject->velocity += vec3(0.0f, speedBall, 0.0f);
+			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation, 0.0f, 0.0f));
 		}
 	}
 

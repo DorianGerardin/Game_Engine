@@ -77,14 +77,14 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
     return {
         A, B,
         normalize(N),
-        (B - A).length(),
+        length(B - A),
         true};
 }
 
-CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
-                                               const SphereCollider *b, const Transform *tb)
-{
-}
+// CollisionPoints FindPlaneSphereCollisionPoints(const PlaneCollider *a, const Transform *ta,
+//                                                const SphereCollider *b, const Transform *tb)
+// {
+// }
 
 // ------------------------------------------------------------------------------------------
 // |                                      SOLVER                                            |
@@ -126,11 +126,14 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
     for (Collision &collision : collisions)
     {
         // cout << "ImpulseSolver" << endl;
-
+        // cout << collision.ObjA->id << endl;
         // Test for is each objects is dynamic or not
         PhysicsObject *aBody, *bBody;
         if (collision.ObjA->isDynamic())
+        {
             aBody = (PhysicsObject *)collision.ObjA;
+            // cout << aBody->id << " :  ";
+        }
         else
             aBody = nullptr;
         if (collision.ObjB->isDynamic())
@@ -141,7 +144,11 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
         // Calcule les Vitesses des objets A et B et leur Vitesses relatives
         vec3 aVitesse, bVitesse, rVitesse;
         if (aBody)
+        {
+            // cout << "aBody->velocity = " << aBody->velocity << endl;
             aVitesse = aBody->velocity;
+            // cout << "aVitesse = " << aVitesse << endl;
+        }
         else
             aVitesse = vec3(0.0f, 0.0f, 0.0f);
         if (bBody)
@@ -150,8 +157,9 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
             bVitesse = vec3(0.0f, 0.0f, 0.0f);
 
         rVitesse = bVitesse - aVitesse;
+        // cout << "bVitesse = " << bVitesse << ", aVitesse = " << aVitesse << endl;
         float nVitesse = dot(rVitesse, collision.Points.Normal);
-
+        // cout << "rVitesse = " << rVitesse << ", collision.Points.Normal = " << collision.Points.Normal << endl;
         float aInvMasse, bInvMasse;
         if (aBody)
             aInvMasse = (float)(1.0f / aBody->mass);
@@ -210,16 +218,20 @@ void ImpulseSolver::Solve(vector<Collision> &collisions, float dt)
         if (abs(f) < j * mu)
         {
             friction = f * tangent;
+            // cout << "friction = " << friction << endl;
         }
 
         else
         {
             mu = length(vec2(aKF, bKF));
             friction = -j * tangent * mu;
+            // cout << "friction = " << friction << endl;
+            // cout << "tangent = " << tangent << endl;
         }
 
         if (aBody ? aBody->isDynamic() : false)
         {
+            // cout << "aVitesse = " << aVitesse << ", friction = " << friction << ", aInvMasse = " << aInvMasse << endl;
             aBody->velocity = aVitesse - friction * aInvMasse;
         }
 

@@ -78,16 +78,36 @@ void Scene::Step(float dt)
         if (obj->isDynamic())
         {
             // Force de gravité = Poids : W = m*g
-            obj->force += obj->mass * obj->gravity; // apply a force
+            // obj->force += obj->mass * obj->gravity; // apply a force
+            obj->force += obj->mass * (obj->gravity + obj->acceleration); // apply a force
+            // cout << obj->id << " :  "<< "force = " << obj->force << ", masse= " << obj->mass << ", gravité= " << obj->gravity << endl;
 
+            // cout << "obj->velocity = " << obj->velocity << " + " << (obj->force / obj->mass) * dt << " = " << obj->velocity + (obj->force / obj->mass) * dt << endl;
             obj->velocity += (obj->force / obj->mass) * dt;
+            // cout << (obj->force / obj->mass) * dt << endl;
+            // cout << obj->id << " :  " << obj->velocity << endl;
+
+            // Clamp max velocity
+            if (obj->velocity.x > obj->maxVelocity)
+                obj->velocity.x = obj->maxVelocity;
+            if (obj->velocity.x < -obj->maxVelocity)
+                obj->velocity.x = -obj->maxVelocity;
+            if (obj->velocity.y > obj->maxVelocity)
+                obj->velocity.y = obj->maxVelocity;
+            if (obj->velocity.y < -obj->maxVelocity)
+                obj->velocity.y = -obj->maxVelocity;
+            if (obj->velocity.z > obj->maxVelocity)
+                obj->velocity.z = obj->maxVelocity;
+            if (obj->velocity.z < -obj->maxVelocity)
+                obj->velocity.z = -obj->maxVelocity;
 
             obj->position = obj->transform->getLocalTranslation();
+            // cout << obj->id << " :  "<< "obj->velocity = " << obj->velocity << endl;
             obj->position += obj->velocity * dt;
-            // cout << obj->Position << endl;
+            // cout << obj->position << endl;
             obj->transform->setLocalTranslation(obj->position);
 
-            obj->force = vec3(0, 0, 0); // reset net force at the end}
+            obj->force = vec3(0, 0, 0); // réinitialise la force résultante à la fin
         }
     }
 }
@@ -108,12 +128,12 @@ void Scene::ResolveCollisions(float dt)
             {
                 continue;
             }
-
             CollisionPoints points = a->collider->TestCollision(a->transform, b->collider, b->transform);
 
             if (points.HasCollision)
             {
                 // cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
+
                 Collision collision;
                 collision.ObjA = a;
                 collision.ObjB = b;
@@ -130,7 +150,9 @@ void Scene::ResolveCollisions(float dt)
     // Solve Collisions
     for (Solver *solver : SolverList)
     {
+        // cout << "test avant " << solver->returnSolverID() << endl;
         solver->Solve(collisions, dt);
+        // cout << "test après " << solver->returnSolverID() << endl;
     }
 }
 
