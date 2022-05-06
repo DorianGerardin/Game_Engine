@@ -25,6 +25,8 @@ uniform bool useHeightMap;
 out vec2 UV;
 out vec3 normal;
 out vec3 FragPos;
+out vec3 WorldPos;
+out vec3 Normal;
 
 void main(){
 
@@ -37,7 +39,14 @@ void main(){
         gl_Position = projectionMatrix * viewMatrix * modelMatrix/*  * selfModelMatrix */ * position;
         // TODO : Output position of the vertex, in clip space : MVP * position
         UV = vertexUV;
-        normal = vertexNormal;
+        mat3 normalMatrix = mat3(projectionMatrix * viewMatrix * modelMatrix);// mat3(modelMatrix); //mat3(projectionMatrix * viewMatrix * modelMatrix);
+        normalMatrix = inverse(normalMatrix);
+        normalMatrix = transpose(normalMatrix);
+        normal = normalize(normalMatrix * vertexNormal);
+        // normal = transpose(inverse(mat3(modelMatrix))) * vertexNormal;
         // FragPos =  vec3(modelMatrix * vec4(vertices_position_modelspace, 1.0));
         FragPos =  vertices_position_modelspace;
+
+        WorldPos = vec3(modelMatrix * position);
+        Normal = mat3(modelMatrix) * normal; 
 }

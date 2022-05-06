@@ -145,7 +145,7 @@ int main(void)
     int nbFrames = 0;
     float earthGravity = 9.81f;
     // float gravity = earthGravity;
-    float gravity = 4.5f;
+    float gravity = 2.5f;
 
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
@@ -238,8 +238,8 @@ int main(void)
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
-    scene->addPhysicsObject(Cube);
-    scene->addPhysicsObject(CubeFall);
+    // scene->addPhysicsObject(Cube);
+    // scene->addPhysicsObject(CubeFall);
 
     PositionSolver *positionSolver = new PositionSolver();
     ImpulseSolver *impulseSolver = new ImpulseSolver();
@@ -278,7 +278,7 @@ int main(void)
         glUseProgram(programID);
 
         //-------------------------------------------------------------------------------------------------
-        GLint cameraPosID = glGetUniformLocation(programID, "cameraPos");
+        GLint cameraPosID = glGetUniformLocation(programID, "camPos");
         glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
 
         // vec3 actualEarthPosition = Earth->transform->getLocalTranslation();

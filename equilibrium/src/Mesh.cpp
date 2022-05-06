@@ -19,13 +19,14 @@ Mesh::Mesh(string filename, GLint modelID)
     if (!extension.compare("off"))
     {
         loadOFF(filename, this->indexed_vertices, this->indices);
-        this->calculate_normals();
+        
     }
     if (!extension.compare("obj"))
         loadOBJ(filename, this->indexed_vertices, this->indices, this->uv, this->vericesNormals);
 
     this->modelID = modelID;
     this->initializeMaterial();
+    this->computeNormals();
 }
 
 // Générattion Maillage d'une primitive (plan, cube, sphère)
@@ -42,10 +43,26 @@ Mesh::~Mesh()
     delete this;
 }
 
+
+void Mesh::setTexture(MaterialType materialType, GLint shader)
+{
+    this->textureID = glGetUniformLocation(shader, "texSampler");
+    switch (materialType)
+    {
+    case WOOD:
+        this->texture = loadBMP_custom("textures/wood1.bmp");
+        break;
+    case EMERALD:
+        break;
+    case BLACK_RUBBER:
+        break;
+    }
+}
+
 void Mesh::initializeMaterial()
 {
     this->material.ambient = vec3(0.6, 0.5, 0.3); // make everything yellowish by default
-    this->material.diffuse = vec3(1.);
+    this->material.diffuse = vec3(0.6, 0.5, 0.3);
     this->material.specular = vec3(1.);
     this->material.shininess = 0.5;
 }
@@ -54,8 +71,10 @@ void Mesh::generateMesh()
 {
     if (this->objectType == SPHERE)
         this->generateSphere();
-    else if (this->objectType == PLANE)
+    else if (this->objectType == PLANE){
         this->generatePlane();
+        // this->computeNormals();
+    }
     else if (this->objectType == CUBE)
         this->generateCube();
     else
@@ -63,7 +82,7 @@ void Mesh::generateMesh()
         printf("Ce maillage n'est pas supporté \n");
         exit(1);
     }
-    this->calculate_normals();
+    this->computeNormals();
 }
 
 // void Mesh::generatePlane()
@@ -104,7 +123,7 @@ void Mesh::generateMesh()
 //             indices.push_back((i + 1) * size + j);
 //         }
 //     }
-//     this->calculate_normals();
+//     this->computeNormals();
 // }
 void Mesh::generatePlane()
 {
@@ -135,15 +154,22 @@ void Mesh::generatePlane()
 
     // --------------------
 
-    this->indices.push_back(0);
-    this->indices.push_back(1);
-    this->indices.push_back(3);
+    // indices.push_back(0);
+    // indices.push_back(1);
+    // indices.push_back(3);
 
-    this->indices.push_back(0);
-    this->indices.push_back(3);
-    this->indices.push_back(2);
+    // indices.push_back(0);
+    // indices.push_back(3);
+    // indices.push_back(2);
 
-    this->calculate_normals();
+    indices.push_back(3);
+    indices.push_back(1);
+    indices.push_back(0);
+
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(0);
+
 }
 
 void Mesh::generateSphere()
@@ -193,7 +219,6 @@ void Mesh::generateSphere()
             }
         }
     }
-    this->calculate_normals();
 }
 
 void Mesh::generateCube()
@@ -345,60 +370,59 @@ void Mesh::generateCube()
     // cout << this->indexed_vertices.size() << endl;
     // cout << this->uv.size() << endl;
     // cout << this->indices.size() << endl;
-    this->calculate_normals();
+    this->computeNormals();
 }
 
-void Mesh::calculate_normals()
-{
-    // vertice normals
-    //  cout << "made it to calculate_normals" << endl;
-    //  this->normals.resize(this->indexed_vertices.size());
-    //  for (unsigned int i = 0; i < this->indexed_vertices.size (); i++)
-    //      this->normals[indices[i]] = vec3 (1.0, 1.0, 0.0);
-    //  for (unsigned int i = 0; i < this->indices.size (); i+=3) {
-    //      vec3 e01 = this->indexed_vertices[this->indices[i + 1]] -  this->indexed_vertices[this->indices[i + 0]];
-    //      vec3 e02 = this->indexed_vertices[this->indices[i + 2]] -  this->indexed_vertices[this->indices[i + 0]];
-    //      vec3 n = cross(e01, e02);
-    //      n = normalize(n);
-    //      for (unsigned int j = 0; j < 3; j++)
-    //          this->normals[this->indices[i + j]] += n;
-    //  }
-    //  for (unsigned int i = 0; i < this->indexed_vertices.size (); i++){
-    //      this->normals[this->indices[i]] = normalize(this->normals[this->indices[i]]);
-    //      // cout << this->indexed_vertices[this->indices[i]].x
-    //      //     << this->indexed_vertices[this->indices[i]].y
-    //      //     << this->indexed_vertices[this->indices[i]].z << endl;
-    //  }
 
-    this->faceNormals.clear();
-    // cout << (int)this->indices.size()/3 << endl;
-    this->faceNormals.resize((int)this->indices.size() / 3);
-    // TODO: implémenter le calcul des normales par face
-    // Attention commencer la fonction par triangle_normals.clear();
-    // Iterer sur les triangles
-    vec3 e_10, e_20, n;
-    for (int i = 0; i < (int)this->indices.size(); i += 3)
-    {
-        // cout << i << endl;
-        e_10 = this->indexed_vertices[this->indices[i + 1]] - this->indexed_vertices[this->indices[i]];
-        e_20 = this->indexed_vertices[this->indices[i + 2]] - this->indexed_vertices[this->indices[i]];
+void Mesh::computeFaceNormals(){
+    
+    int facesNb = (int)indices.size()/3;
+    faceNormals.clear();
+    faceNormals.resize(facesNb,vec3(0.));
+    vec3 e_10,e_20,n;
+    for (int i = 0; i < facesNb; i++){
+        // cout << "i =" << i << "  ";
+        e_10 = indexed_vertices[indices[i*3 + 1]] - indexed_vertices[indices[i*3 + 0]];
+        e_20 = indexed_vertices[indices[i*3 + 2]] - indexed_vertices[indices[i*3 + 0]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
-        this->faceNormals[i / 3] = cross(e_10, e_20);
+        faceNormals[i] = cross(e_10, e_20); 
+        // cout << "e_10 "<< e_10.x << " " << e_10.y << " "<< e_10.z << endl; 
+        // cout << "non faceNormals[" << i << "] "<< faceNormals[i].x << " " << faceNormals[i].y << " "<< faceNormals[i].z << endl;
+         
+        faceNormals[i] = normalize(faceNormals[i]);
+        // cout << "oui faceNormals[" << i << "] "<< faceNormals[i].x << " " << faceNormals[i].y << " "<< faceNormals[i].z << endl;
+       
     }
 }
 
-void Mesh::setTexture(MaterialType materialType, GLint shader)
-{
-    this->textureID = glGetUniformLocation(shader, "texSampler");
-    switch (materialType)
-    {
-    case WOOD:
-        this->texture = loadBMP_custom("textures/wood1.bmp");
-        break;
-    case EMERALD:
-        break;
-    case BLACK_RUBBER:
-        break;
+//Compute vertices normals as the average of its incident faces normals
+void Mesh::computeVerticesNormals(){
+    
+    vericesNormals.clear();
+    int normales_size = indexed_vertices.size(),
+        faces_size = (int)faceNormals.size();
+    vericesNormals.resize(normales_size,vec3(0.));
+
+    for (int face = 0; face < faces_size; face++){
+        for (int sommet = 0; sommet < 3; sommet++){
+            //  cout << "faces_size = " << faces_size << "; face + sommet  " << face + sommet<< "; face*3 + sommet  " << face*3 + sommet<< endl;
+            vericesNormals[indices[face*3 + sommet]] += faceNormals[face]; 
+            // cout << "non vericesNormals[" << indices[face*3 + sommet] << "] "<< 
+            //         vericesNormals[indices[face*3 + sommet]].x << " " << 
+            //         vericesNormals[indices[face*3 + sommet]].y << " " <<
+            //         vericesNormals[indices[face*3 + sommet]].z << endl;
+           
+        }
     }
+    for (int sommet = 0; sommet < normales_size; sommet++){
+        vericesNormals[sommet] = normalize(vericesNormals[sommet]);
+    }
+        
 }
+
+void Mesh::computeNormals(){
+    computeFaceNormals();
+    computeVerticesNormals();
+}
+

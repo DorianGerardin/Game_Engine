@@ -1,7 +1,7 @@
 #include "SimpleObject.hpp"
 
 
-class LightObject {
+class LightObject: public SimpleObject {
 
     public:
         vec3 position;

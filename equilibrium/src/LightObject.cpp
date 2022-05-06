@@ -3,9 +3,9 @@
 LightObject::LightObject(GLuint shader)
 {
     this->shader = shader;
-    this->position = vec3(-1., 0., 0.);
-    this->material.ambient = vec3(1.) * glm::vec3(0.5f); // decrease the influence
-    this->material.diffuse = vec3(1.) * glm::vec3(0.2f); // decrease the influence
+    this->position = vec3(5.0f, 5.f, 1.0f);
+    this->material.ambient = vec3(1.) ; // * glm::vec3(0.5f)decrease the influence
+    this->material.diffuse = vec3(1.) ; //* glm::vec3(0.2f) decrease the influence
     this->material.specular = vec3(1.);
 };
 

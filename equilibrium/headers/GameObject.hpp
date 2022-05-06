@@ -30,6 +30,14 @@ using namespace std;
 #include "Transform.hpp"
 #include "SimpleObject.hpp"
 
+struct PBRMaterial{
+    GLuint metallic;
+    GLuint albedo;
+    GLuint roughness;
+    GLuint normal;
+    GLuint ao;
+};
+
 class GameObject : virtual public SimpleObject
 {
 
@@ -38,6 +46,7 @@ public:
     GLuint shader;
     GLuint useHeightMap;
     bool hasTexture;
+    PBRMaterial PBRMaterials;
 
 public:
     GameObject(string id, string filename, GLint, GLuint);
@@ -59,6 +68,8 @@ public:
     void applyTexture(GLuint, GLuint);
 
     virtual void draw();
+
+    void initMaterial();
 };
 
 #endif

@@ -15,7 +15,7 @@ float rotationX = 0.0f;
 float rotationY = 0.0f;
 float rotationZ = 0.0f;
 float rotationNoStop = 0.0f;
-float speedRotation = 1.0f;
+float speedRotation = 2.5f;
 
 float speedBall = 0.05f;
 float speedJump = 10.0f;

@@ -68,10 +68,13 @@ public:
 
     Material material;
 
+    bool isPlane = false;
+
 public:
     Mesh(int, float, GLint);
     Mesh(string, GLint);
     ~Mesh();
+    void computeNormals();
 
 private:
     string getFileExt(const string &);
@@ -79,9 +82,11 @@ private:
     void generatePlane();
     void generateCube();
     void generateSphere();
-    void calculate_normals();
     void setTexture(MaterialType materialType, GLint shader);
     void initializeMaterial();
+    void computeFaceNormals();
+    void computeVerticesNormals();
+    
 };
 
 #endif // MESH_HPP

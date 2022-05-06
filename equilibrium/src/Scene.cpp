@@ -163,8 +163,9 @@ void Scene::draw()
         if (objects[i]->toDraw)
         {
             // cout << "Draw " << objects[i]->id << endl;
+            light->draw();
             objects[i]->draw();
         }
     }
-    light->draw();
+    // light->draw();
 }
