@@ -122,7 +122,7 @@ int main(void)
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
     GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
-    GLuint skybox_texture = loadBMP_custom("textures/skybox4.bmp");
+    GLuint skybox_texture = loadBMP_custom("textures/skybox.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     // glActiveTexture(GL_TEXTURE0);
