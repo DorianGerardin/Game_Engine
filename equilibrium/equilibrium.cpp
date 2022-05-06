@@ -122,11 +122,12 @@ int main(void)
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
     GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
+    GLuint skybox_texture = loadBMP_custom("textures/skybox4.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, rock_texture);
-    glUniform1i(TextureIDRock, 0);
+    // glActiveTexture(GL_TEXTURE0);
+    // glBindTexture(GL_TEXTURE_2D, rock_texture);
+    // glUniform1i(TextureIDRock, 0);
 
     // GLuint TextureIDHmap = glGetUniformLocation(programID,"hmapSampler");
     GLuint TextureID = glGetUniformLocation(programID, "texSampler");
@@ -159,6 +160,9 @@ int main(void)
     // Déclaration des Objets
     unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
     LightObject *light = light_uniquePtr.get();
+
+    unique_ptr<GameObject> skybox_uniquePtr = make_unique<GameObject>("GO_SkyBox", SPHERE, 200.0f, modelID, programID);
+    GameObject *skybox = skybox_uniquePtr.get();
 
     // CameraObject *cam = scene->cameras2[0];
     // vec3 position = vec3(1.75f, 1.f, 4.5f);
@@ -197,6 +201,7 @@ int main(void)
     Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
     CubeFall->applyTexture(dice_texture, TextureID);
+    skybox->applyTexture(skybox_texture, TextureID);
 
     // --------------------
     // Définition des liens de parenté entre objets
@@ -207,6 +212,8 @@ int main(void)
     // --------------------
     // Transformatios des objets dans l'espace local
     // light->transform->setLocalTranslation(vec3(0.0f, 0.0f, 0.0f));
+
+    skybox->transform->setLocalScale(vec3(50., 50., 50.));
 
     cam->transform->setLocalTranslation(vec3(0, -20, 10));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
@@ -232,12 +239,13 @@ int main(void)
     // --------------------
     // Add Objects to Scene
     scene->addLight(light);
-    scene->addCamera2(cam);
+    scene->addCamera(cam);
     scene->addPhysicsObject(terrain);
     scene->addPhysicsObject(Earth);
     scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
     scene->addPhysicsObject(Sun);
+    scene->addObject(skybox);
     // scene->addPhysicsObject(Cube);
     // scene->addPhysicsObject(CubeFall);
 
