@@ -98,18 +98,25 @@ float GameObject::heightInTriangle(Mesh *mesh)
 
 void GameObject::applyTexture(GLuint texture, GLuint textureID)
 {
-
     this->hasTexture = true;
     this->mesh->texture = texture;
     this->mesh->textureID = textureID;
 }
 
+void GameObject::applyMaterial(Material *material){
+    this->PBRMaterials.albedo    = loadBMP_custom(material->albedo);
+    this->PBRMaterials.normal    = loadBMP_custom(material->normal);
+    this->PBRMaterials.metallic  = loadBMP_custom(material->metallic);
+    this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
+    this->PBRMaterials.ao        = loadBMP_custom(material->ao);
+}
+
 void GameObject::initMaterial(){
-    this->PBRMaterials.albedo    = loadBMP_custom("textures/brick/albedo.bmp");
-    this->PBRMaterials.normal    = loadBMP_custom("textures/brick/normal.bmp");
-    this->PBRMaterials.metallic  = loadBMP_custom("textures/brick/metallic.bmp");
-    this->PBRMaterials.roughness = loadBMP_custom("textures/brick/roughness.bmp");
-    this->PBRMaterials.ao        = loadBMP_custom("textures/brick/ao.bmp");
+    this->PBRMaterials.albedo    = loadBMP_custom("textures/blue_wood/albedo.bmp");
+    this->PBRMaterials.normal    = loadBMP_custom("textures/blue_wood/normal.bmp");
+    this->PBRMaterials.metallic  = loadBMP_custom("textures/blue_wood/metallic.bmp");
+    this->PBRMaterials.roughness = loadBMP_custom("textures/blue_wood/roughness.bmp");
+    this->PBRMaterials.ao        = loadBMP_custom("textures/blue_wood/ao.bmp");
 }
 
 void GameObject::draw()
@@ -146,59 +153,46 @@ void GameObject::draw()
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->mesh->indices.size() * sizeof(unsigned short), &this->mesh->indices[0], GL_STATIC_DRAW);
 
     // TEXTURES
+    glGenBuffers(1, &uvbuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glBufferData(GL_ARRAY_BUFFER, this->mesh->uv.size() * sizeof(float), &this->mesh->uv[0], GL_STATIC_DRAW);
+
+
+
     GLint hasTextureID = glGetUniformLocation(this->shader, "hasTexture");
     if (hasTexture)
     {
-
         glUniform1i(hasTextureID, GL_TRUE);
-
-        glGenBuffers(1, &uvbuffer);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glBufferData(GL_ARRAY_BUFFER, this->mesh->uv.size() * sizeof(float), &this->mesh->uv[0], GL_STATIC_DRAW);
-
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, this->mesh->texture);
-        glUniform1i(this->mesh->textureID, 0);
-
-        glUniform1i(glGetUniformLocation(this->shader, "albedoMap"), 1);
-        glUniform1i(glGetUniformLocation(this->shader, "normalMap"), 2);
-        glUniform1i(glGetUniformLocation(this->shader, "metallicMap"), 3);
-        glUniform1i(glGetUniformLocation(this->shader, "roughnessMap"), 4);
-        glUniform1i(glGetUniformLocation(this->shader, "aoMap"), 5); 
-
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.albedo);
-        glActiveTexture(GL_TEXTURE2);
-        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.normal);
-        glActiveTexture(GL_TEXTURE3);
-        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.metallic);
-        glActiveTexture(GL_TEXTURE4);
-        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.roughness);
-        glActiveTexture(GL_TEXTURE5);
-        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.ao);
-        
-        
-        glEnableVertexAttribArray(1);
-        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+        glUniform1i(this->mesh->textureID, 0);     
     }
-    else
+    else{
         glUniform1i(hasTextureID, GL_FALSE);
+    }
+    
+    glUniform1i(glGetUniformLocation(this->shader, "albedoMap"), 1);
+    glUniform1i(glGetUniformLocation(this->shader, "normalMap"), 2);
+    glUniform1i(glGetUniformLocation(this->shader, "metallicMap"), 3);
+    glUniform1i(glGetUniformLocation(this->shader, "roughnessMap"), 4);
+    glUniform1i(glGetUniformLocation(this->shader, "aoMap"), 5); 
 
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.albedo);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.normal);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.metallic);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.roughness);
+    glActiveTexture(GL_TEXTURE5);
+    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.ao);
 
+    glEnableVertexAttribArray(1);
+    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
 
     
-
-    // MATERIAL
-    GLint materialAmbientID = glGetUniformLocation(this->shader, "material.ambient");
-    glUniform3fv(materialAmbientID, 1, glm::value_ptr(this->mesh->material.ambient));
-    GLint materialDiffuseID = glGetUniformLocation(this->shader, "material.diffuse");
-    glUniform3fv(materialDiffuseID, 1, glm::value_ptr(this->mesh->material.diffuse));
-    GLint materialSpecularID = glGetUniformLocation(this->shader, "material.specular");
-    glUniform3fv(materialSpecularID, 1, glm::value_ptr(this->mesh->material.specular));
-    GLint materialShininessID = glGetUniformLocation(this->shader, "material.shininess");
-    glUniform1f(materialShininessID, this->mesh->material.shininess);
-
     // DRAW
     glEnableVertexAttribArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);

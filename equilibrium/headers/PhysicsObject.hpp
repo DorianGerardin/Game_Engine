@@ -25,8 +25,8 @@ public:
     float kineticFriction = 0.7f; // Kinetic friction coefficient
     float restitution = 1.2f;     // Elasticity of collisions (bounciness)
 
-    MaterialType materialType;
-    MaterialType materialTypeOnSurface;
+    // MaterialType materialType;
+    // MaterialType materialTypeOnSurface;
 
     bool onSurface = false;
     PhysicsObject *onSurfaceObject;

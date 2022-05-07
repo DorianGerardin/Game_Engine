@@ -25,7 +25,7 @@ Mesh::Mesh(string filename, GLint modelID)
         loadOBJ(filename, this->indexed_vertices, this->indices, this->uv, this->vericesNormals);
 
     this->modelID = modelID;
-    this->initializeMaterial();
+    // this->initializeMaterial();
     this->computeNormals();
 }
 
@@ -41,30 +41,6 @@ Mesh::Mesh(int type, float size, GLint modelID)
 Mesh::~Mesh()
 {
     delete this;
-}
-
-
-void Mesh::setTexture(MaterialType materialType, GLint shader)
-{
-    this->textureID = glGetUniformLocation(shader, "texSampler");
-    switch (materialType)
-    {
-    case WOOD:
-        this->texture = loadBMP_custom("textures/wood1.bmp");
-        break;
-    case EMERALD:
-        break;
-    case BLACK_RUBBER:
-        break;
-    }
-}
-
-void Mesh::initializeMaterial()
-{
-    this->material.ambient = vec3(0.6, 0.5, 0.3); // make everything yellowish by default
-    this->material.diffuse = vec3(0.6, 0.5, 0.3);
-    this->material.specular = vec3(1.);
-    this->material.shininess = 0.5;
 }
 
 void Mesh::generateMesh()
@@ -367,9 +343,6 @@ void Mesh::generateCube()
     this->indices.push_back(12);
     this->indices.push_back(13);
 
-    // cout << this->indexed_vertices.size() << endl;
-    // cout << this->uv.size() << endl;
-    // cout << this->indices.size() << endl;
     this->computeNormals();
 }
 
@@ -381,18 +354,14 @@ void Mesh::computeFaceNormals(){
     faceNormals.resize(facesNb,vec3(0.));
     vec3 e_10,e_20,n;
     for (int i = 0; i < facesNb; i++){
-        // cout << "i =" << i << "  ";
         e_10 = indexed_vertices[indices[i*3 + 1]] - indexed_vertices[indices[i*3 + 0]];
         e_20 = indexed_vertices[indices[i*3 + 2]] - indexed_vertices[indices[i*3 + 0]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
         faceNormals[i] = cross(e_10, e_20); 
-        // cout << "e_10 "<< e_10.x << " " << e_10.y << " "<< e_10.z << endl; 
-        // cout << "non faceNormals[" << i << "] "<< faceNormals[i].x << " " << faceNormals[i].y << " "<< faceNormals[i].z << endl;
-         
+        
         faceNormals[i] = normalize(faceNormals[i]);
-        // cout << "oui faceNormals[" << i << "] "<< faceNormals[i].x << " " << faceNormals[i].y << " "<< faceNormals[i].z << endl;
-       
+        
     }
 }
 
@@ -406,12 +375,7 @@ void Mesh::computeVerticesNormals(){
 
     for (int face = 0; face < faces_size; face++){
         for (int sommet = 0; sommet < 3; sommet++){
-            //  cout << "faces_size = " << faces_size << "; face + sommet  " << face + sommet<< "; face*3 + sommet  " << face*3 + sommet<< endl;
             vericesNormals[indices[face*3 + sommet]] += faceNormals[face]; 
-            // cout << "non vericesNormals[" << indices[face*3 + sommet] << "] "<< 
-            //         vericesNormals[indices[face*3 + sommet]].x << " " << 
-            //         vericesNormals[indices[face*3 + sommet]].y << " " <<
-            //         vericesNormals[indices[face*3 + sommet]].z << endl;
            
         }
     }

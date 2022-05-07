@@ -166,12 +166,6 @@ void main(){
 	    // gamma correct
 	    color = pow(color, vec3(1.0/2.2)) *3; 
 
-	    // if (color == vec3(0.)){
-	    //     color = vec3(1., 0., 0.);
-	    // }
-	    // else color = vec3(0., 1., 0.);
-	    // // color = vec3(NDF, 0., 0.);
-	    // color =  kD;
 	}
     
 }

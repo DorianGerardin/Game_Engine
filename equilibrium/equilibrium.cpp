@@ -115,6 +115,13 @@ int main(void)
     // |                                      TEXTURES                                            |
     // --------------------------------------------------------------------------------------------
 
+    Material crystal;
+    crystal.albedo = "textures/crystal/albedo.bmp";
+    crystal.normal    = "textures/crystal/normal.bmp";
+    crystal.metallic  = "textures/crystal/metallic.bmp";
+    crystal.roughness = "textures/crystal/roughness.bmp";
+    crystal.ao        = "textures/crystal/ao.bmp";
+
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
     GLuint moon_texture = loadBMP_custom("textures/moonTexture.bmp");
     GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
@@ -194,10 +201,11 @@ int main(void)
 
     // --------------------
     // Textures
-    terrain->applyTexture(smiley_texture, TextureID);
+    // terrain->applyTexture(smiley_texture, TextureID);
     Earth->ToDraw(false);
-    EarthRotation->applyTexture(earth_texture, TextureID);
+    // EarthRotation->applyTexture(earth_texture, TextureID);
     Moon->applyTexture(moon_texture, TextureID);
+    EarthRotation->applyMaterial(&crystal);
     Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
     CubeFall->applyTexture(dice_texture, TextureID);

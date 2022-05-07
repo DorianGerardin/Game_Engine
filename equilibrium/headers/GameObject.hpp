@@ -30,6 +30,16 @@ using namespace std;
 #include "Transform.hpp"
 #include "SimpleObject.hpp"
 
+struct Material
+{
+    const char * materialName;
+    const char * albedo;
+    const char * ao;
+    const char * roughness;
+    const char * metallic;
+    const char * normal;
+};
+
 struct PBRMaterial{
     GLuint metallic;
     GLuint albedo;
@@ -67,8 +77,12 @@ public:
 
     void applyTexture(GLuint, GLuint);
 
+    void applyMaterial(Material *);
+
     virtual void draw();
 
+    
+private:
     void initMaterial();
 };
 

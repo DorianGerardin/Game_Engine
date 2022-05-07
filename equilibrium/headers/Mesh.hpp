@@ -31,25 +31,13 @@ enum Type
     PLANE
 };
 
-enum MaterialType
-{
-    WOOD,
-    EMERALD,
-    BLACK_RUBBER
-};
-
-struct Material
-{
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
-    double shininess;
-
-    // MaterialType materialType;
-
-    float index_medium = 1.;
-    float transparency = 0.;
-};
+// enum MaterialType
+// {
+//     BRICK,
+//     ICE,
+//     RUBBER,
+//     CRYSTAL
+// };
 
 class Mesh
 {
@@ -66,8 +54,6 @@ public:
 
     int objectType = -1;
 
-    Material material;
-
     bool isPlane = false;
 
 public:
@@ -82,8 +68,6 @@ private:
     void generatePlane();
     void generateCube();
     void generateSphere();
-    void setTexture(MaterialType materialType, GLint shader);
-    void initializeMaterial();
     void computeFaceNormals();
     void computeVerticesNormals();
     
