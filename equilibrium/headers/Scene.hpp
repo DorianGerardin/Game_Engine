@@ -73,6 +73,7 @@ public:
     void Step(float dt);
     void ResolveCollisions(float dt);
 
+    void update();
     void draw();
 
     GameObject* getGameObjectFromId(string);

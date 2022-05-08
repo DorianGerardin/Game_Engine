@@ -33,10 +33,10 @@ mat4 Transform::calculSelfModelMatrix()
 Transform::Transform()
 {
     scale = vec3(1.0f);
-    rotation = vec3(1.0f);
+    rotation = vec3(0.0f);
     translation = vec3(0.0f);
     selfScale = vec3(1.0f);
-    selfRotation = vec3(1.0f);
+    selfRotation = vec3(0.0f);
     selfTranslation = vec3(0.f);
 }
 Transform::Transform(vec3 s, vec3 r, vec3 t)

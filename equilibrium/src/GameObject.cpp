@@ -141,7 +141,6 @@ void GameObject::draw()
 
         this->rotationObject->draw();
     }else{
-
         GLuint vertexbuffer;
         GLuint elementbuffer;
         GLuint uvbuffer;

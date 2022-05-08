@@ -113,8 +113,8 @@ void Scene::Step(float dt)
             obj->transform->setLocalTranslation(obj->position);
             
             if (obj->hasRotationObject){
-                cout << obj->rotationObject->id << endl;
-                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != this->player->id) {
+                //cout << obj->rotationObject->id << endl;
+                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) /*&& obj->id != this->player->id*/) {
                     vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
                     float radius = radiusPlayer / (obj->mesh->size * obj->transform->getLocalScale().x);
                     obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y*dt*150 * radius, -obj->velocity.x*dt*150 * radius, 0));
@@ -167,6 +167,24 @@ void Scene::ResolveCollisions(float dt)
         // cout << "test avant " << solver->returnSolverID() << endl;
         solver->Solve(collisions, dt);
         // cout << "test après " << solver->returnSolverID() << endl;
+    }
+}
+
+void Scene::update() {
+    for (int i = 0; i < objects.size(); i++)
+    {
+        if (!objects[i]->parent)
+        {
+            objects[i]->updateSelfAndChild();
+        }
+    }
+
+    for (int i = 0; i < PhysicsObjectList.size(); i++)
+    {
+        if (!PhysicsObjectList[i]->parent)
+        {
+            PhysicsObjectList[i]->updateSelfAndChild();
+        }
     }
 }
 

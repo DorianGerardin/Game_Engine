@@ -136,6 +136,13 @@ int main(void)
     fabric.roughness = "textures/fabric1/roughness.bmp";
     fabric.ao        = "textures/fabric1/ao.bmp";
 
+    Material ice;
+    ice.albedo = "textures/ice/albedo.bmp";
+    ice.normal    = "textures/ice/normal.bmp";
+    ice.metallic  = "textures/ice/metallic.bmp";
+    ice.roughness = "textures/ice/roughness.bmp";
+    ice.ao        = "textures/ice/ao.bmp";
+
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
     GLuint moon_texture = loadBMP_custom("textures/moonTexture.bmp");
     GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
@@ -143,7 +150,7 @@ int main(void)
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
     GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
-    GLuint skybox_texture = loadBMP_custom("textures/skybox2.bmp");
+    GLuint skybox_texture = loadBMP_custom("textures/skybox.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     // glActiveTexture(GL_TEXTURE0);
@@ -194,9 +201,9 @@ int main(void)
     cam->ToDraw(false);
 
     unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    PhysicsObject *terrain1 = plane_uniquePtr.get();
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
-    PhysicsObject *terrain1 = plane_uniquePtr.get();
     unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     PhysicsObject *terrain2 = plane2_uniquePtr.get();
     unique_ptr<PhysicsObject> plane3_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
@@ -216,6 +223,7 @@ int main(void)
     GameObject *MoonRotation = MoonRotation_uniquePtr.get();
     unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
+    Sun->addVisualSphereRotation();
 
     unique_ptr<PhysicsObject> Cube_uniquePtr = make_unique<PhysicsObject>("PO_Cube", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *Cube = Cube_uniquePtr.get();
@@ -229,6 +237,8 @@ int main(void)
     // EarthRotation->applyTexture(earth_texture, TextureID);
     // Moon->ToDraw(false);
     // Earth->applyTexture(moon_texture, TextureID);
+    terrain1->applyMaterial(&ice);
+    terrain2->applyMaterial(&ice);
     Moon->applyTexture(moon_texture, TextureID);
     // MoonRotation->applyTexture(moon_texture, TextureID);
     Earth->applyMaterial(&fabric);
@@ -248,14 +258,15 @@ int main(void)
     // Transformatios des objets dans l'espace local
     // light->transform->setLocalTranslation(vec3(0.0f, 0.0f, 0.0f));
 
-    skybox->transform->setLocalScale(vec3(50., 50., 50.));
+    //skybox->transform->setLocalScale(vec3(5., 5., 5.));
+    skybox->transform->setLocalRotation(vec3(180, 0, 0));
 
     cam->transform->setLocalTranslation(vec3(0, -20, 10));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain1->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
     terrain2->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
-    terrain2->transform->setLocalTranslation(vec3(0.0f, -5.0f, 0.0f));
+    terrain2->transform->setLocalTranslation(vec3(5.0f, 0.0f, 0.0f));
     // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
@@ -338,14 +349,16 @@ int main(void)
 
         // --------------------
         // Update Objects
-        terrain1->updateSelfAndChild();
-        terrain2->updateSelfAndChild();
-        Earth->updateSelfAndChild();
-        Moon->updateSelfAndChild();
-        Sun->updateSelfAndChild();
-        Cube->updateSelfAndChild();
-        CubeFall->updateSelfAndChild();
+        // skybox->updateSelfAndChild();
+        // terrain1->updateSelfAndChild();
+        // terrain2->updateSelfAndChild();
+        // Earth->updateSelfAndChild();
+        // Moon->updateSelfAndChild();
+        // Sun->updateSelfAndChild();
+        // Cube->updateSelfAndChild();
+        // CubeFall->updateSelfAndChild();
         // cout << Moon->transform->getWorldTranslation() << endl;
+        scene->update();
 
         scene->Step(deltaTime);
         //-------------------------------------------------------------------------------------------------
