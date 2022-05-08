@@ -99,8 +99,17 @@ void Scene::Step(float dt)
             obj->position = obj->transform->getLocalTranslation();
             // cout << obj->id << " :  "<< "obj->velocity = " << obj->velocity << endl;
             obj->position += obj->velocity * dt;
-            // cout << obj->position << endl;
+
+
             obj->transform->setLocalTranslation(obj->position);
+            
+            if (obj->hasRotationObject){
+                cout << obj->rotationObject->id << endl;
+                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != "Player") {
+                    vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
+                    obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y*dt*70, -obj->velocity.x*dt*70, 0));
+                }
+            }
 
             obj->force = vec3(0, 0, 0); // réinitialise la force résultante à la fin
         }
@@ -149,6 +158,31 @@ void Scene::ResolveCollisions(float dt)
         solver->Solve(collisions, dt);
         // cout << "test après " << solver->returnSolverID() << endl;
     }
+}
+
+
+GameObject* Scene::getGameObjectFromId(string id){
+    for (auto &object : this->objects) // access by reference to avoid copying
+    {  
+        if (object->id == id)
+        {
+            return object;
+        }
+    }
+    return NULL;
+}
+
+PhysicsObject* Scene::getPhysicsObjectFromId(string id){
+    
+    for (auto &object : this->PhysicsObjectList) // access by reference to avoid copying
+    {  
+        if (object->id == id)
+        {
+            cout << "object->id " <<object->id << endl;
+            return object;
+        }
+    }
+    return NULL;
 }
 
 void Scene::draw()

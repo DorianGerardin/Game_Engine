@@ -58,6 +58,9 @@ public:
     bool hasTexture;
     PBRMaterial PBRMaterials;
 
+    bool hasRotationObject = false;
+    GameObject *rotationObject;
+
 public:
     GameObject(string id, string filename, GLint, GLuint);
 

@@ -54,7 +54,7 @@ vec3 getNormalFromMap()
     vec2 st1 = dFdx(UV);
     vec2 st2 = dFdy(UV);
 
-    vec3 N   = normalize(Normal);
+    vec3 N   = normalize(normal);
     vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
     vec3 B  = -normalize(cross(N, T));
     mat3 TBN = mat3(T, B, N);
@@ -156,11 +156,10 @@ void main(){
 	    Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
 
-	    vec3 ambient = vec3(0.03) * albedo * ao;
+	    vec3 ambient = vec3(0.1) * albedo * ao;
 	    // vec3 ambient = vec3(0.3) * albedo * ao;
 	    
 	    color = ambient + Lo;
-
 	    // HDR tonemapping
 	    color = color / (color + vec3(1.0));
 	    // gamma correct

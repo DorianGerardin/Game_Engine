@@ -73,6 +73,9 @@ public:
     void ResolveCollisions(float dt);
 
     void draw();
+
+    GameObject* getGameObjectFromId(string);
+    PhysicsObject* getPhysicsObjectFromId(string);
 };
 
 #endif // SCENE_HPP

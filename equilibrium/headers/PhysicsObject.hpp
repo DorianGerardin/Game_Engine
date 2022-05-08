@@ -39,6 +39,7 @@ public:
 
     bool isStatic();
     bool isDynamic();
+    void addVisualSphereRotation();
 };
 
 #endif

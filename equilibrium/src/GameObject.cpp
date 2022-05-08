@@ -104,134 +104,152 @@ void GameObject::applyTexture(GLuint texture, GLuint textureID)
 }
 
 void GameObject::applyMaterial(Material *material){
-    this->PBRMaterials.albedo    = loadBMP_custom(material->albedo);
-    this->PBRMaterials.normal    = loadBMP_custom(material->normal);
-    this->PBRMaterials.metallic  = loadBMP_custom(material->metallic);
-    this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
-    this->PBRMaterials.ao        = loadBMP_custom(material->ao);
+    if (this->hasRotationObject){
+        this->rotationObject->PBRMaterials.albedo    = loadBMP_custom(material->albedo);
+        this->rotationObject->PBRMaterials.normal    = loadBMP_custom(material->normal);
+        this->rotationObject->PBRMaterials.metallic  = loadBMP_custom(material->metallic);
+        this->rotationObject->PBRMaterials.roughness = loadBMP_custom(material->roughness);
+        this->rotationObject->PBRMaterials.ao        = loadBMP_custom(material->ao);
+    }
+    else {
+        this->PBRMaterials.albedo    = loadBMP_custom(material->albedo);
+        this->PBRMaterials.normal    = loadBMP_custom(material->normal);
+        this->PBRMaterials.metallic  = loadBMP_custom(material->metallic);
+        this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
+        this->PBRMaterials.ao        = loadBMP_custom(material->ao);
+    }
 }
 
 void GameObject::initMaterial(){
-    this->PBRMaterials.albedo    = loadBMP_custom("textures/blue_wood/albedo.bmp");
-    this->PBRMaterials.normal    = loadBMP_custom("textures/blue_wood/normal.bmp");
-    this->PBRMaterials.metallic  = loadBMP_custom("textures/blue_wood/metallic.bmp");
-    this->PBRMaterials.roughness = loadBMP_custom("textures/blue_wood/roughness.bmp");
-    this->PBRMaterials.ao        = loadBMP_custom("textures/blue_wood/ao.bmp");
+    this->PBRMaterials.albedo    = loadBMP_custom("textures/concrete/albedo.bmp");
+    this->PBRMaterials.normal    = loadBMP_custom("textures/concrete/normal.bmp");
+    this->PBRMaterials.metallic  = loadBMP_custom("textures/concrete/metallic.bmp");
+    this->PBRMaterials.roughness = loadBMP_custom("textures/concrete/roughness.bmp");
+    this->PBRMaterials.ao        = loadBMP_custom("textures/concrete/ao.bmp");
 }
 
 void GameObject::draw()
 {
-    
-    GLuint vertexbuffer;
-    GLuint elementbuffer;
-    GLuint uvbuffer;
-    GLuint normalbuffer;
+    if (hasRotationObject){
 
-    glUseProgram(this->shader);
+        this->rotationObject->transform->setLocalTranslation(this->transform->getLocalTranslation());
+        this->rotationObject->transform->setLocalScale(this->transform->getLocalScale());
+        this->rotationObject->transform->computeModelMatrix();
 
-    GLint useHeightMapID = glGetUniformLocation(this->shader, "useHeightMap");
-    if (this->useHeightMap)
-        glUniform1i(useHeightMapID, GL_TRUE);
-    else
-        glUniform1i(useHeightMapID, GL_FALSE);
+        this->rotationObject->draw();
+    }else{
 
-    glUniformMatrix4fv(this->mesh->modelID, 1, GL_FALSE, &this->transform->getModelMatrix()[0][0]);
+        GLuint vertexbuffer;
+        GLuint elementbuffer;
+        GLuint uvbuffer;
+        GLuint normalbuffer;
 
-    // BUFFERS
-    glGenBuffers(1, &vertexbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->mesh->indexed_vertices.size() * sizeof(vec3), &this->mesh->indexed_vertices[0], GL_STATIC_DRAW);
+        glUseProgram(this->shader);
 
-    // normals
-    glGenBuffers(1, &normalbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->mesh->vericesNormals.size() * sizeof(vec3), &this->mesh->vericesNormals[0], GL_STATIC_DRAW);
+        GLint useHeightMapID = glGetUniformLocation(this->shader, "useHeightMap");
+        if (this->useHeightMap)
+            glUniform1i(useHeightMapID, GL_TRUE);
+        else
+            glUniform1i(useHeightMapID, GL_FALSE);
 
-    // Generate a buffer for the indices as well
-    glGenBuffers(1, &elementbuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->mesh->indices.size() * sizeof(unsigned short), &this->mesh->indices[0], GL_STATIC_DRAW);
+        glUniformMatrix4fv(this->mesh->modelID, 1, GL_FALSE, &this->transform->getModelMatrix()[0][0]);
 
-    // TEXTURES
-    glGenBuffers(1, &uvbuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glBufferData(GL_ARRAY_BUFFER, this->mesh->uv.size() * sizeof(float), &this->mesh->uv[0], GL_STATIC_DRAW);
+        // BUFFERS
+        glGenBuffers(1, &vertexbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->mesh->indexed_vertices.size() * sizeof(vec3), &this->mesh->indexed_vertices[0], GL_STATIC_DRAW);
+        
+        // normals
+        glGenBuffers(1, &normalbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->mesh->vericesNormals.size() * sizeof(vec3), &this->mesh->vericesNormals[0], GL_STATIC_DRAW);
+
+        // Generate a buffer for the indices as well
+        glGenBuffers(1, &elementbuffer);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, this->mesh->indices.size() * sizeof(unsigned short), &this->mesh->indices[0], GL_STATIC_DRAW);
+
+        // TEXTURES
+        glGenBuffers(1, &uvbuffer);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glBufferData(GL_ARRAY_BUFFER, this->mesh->uv.size() * sizeof(float), &this->mesh->uv[0], GL_STATIC_DRAW);
 
 
 
-    GLint hasTextureID = glGetUniformLocation(this->shader, "hasTexture");
-    if (hasTexture)
-    {
-        glUniform1i(hasTextureID, GL_TRUE);
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, this->mesh->texture);
-        glUniform1i(this->mesh->textureID, 0);     
+        GLint hasTextureID = glGetUniformLocation(this->shader, "hasTexture");
+        if (hasTexture)
+        {
+            glUniform1i(hasTextureID, GL_TRUE);
+            glActiveTexture(GL_TEXTURE0);
+            glBindTexture(GL_TEXTURE_2D, this->mesh->texture);
+            glUniform1i(this->mesh->textureID, 0);     
+        }
+        else{
+            glUniform1i(hasTextureID, GL_FALSE);
+        }
+        
+        glUniform1i(glGetUniformLocation(this->shader, "albedoMap"), 1);
+        glUniform1i(glGetUniformLocation(this->shader, "normalMap"), 2);
+        glUniform1i(glGetUniformLocation(this->shader, "metallicMap"), 3);
+        glUniform1i(glGetUniformLocation(this->shader, "roughnessMap"), 4);
+        glUniform1i(glGetUniformLocation(this->shader, "aoMap"), 5); 
+
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.albedo);
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.normal);
+        glActiveTexture(GL_TEXTURE3);
+        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.metallic);
+        glActiveTexture(GL_TEXTURE4);
+        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.roughness);
+        glActiveTexture(GL_TEXTURE5);
+        glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.ao);
+
+        glEnableVertexAttribArray(1);
+        glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
+
+        
+        // DRAW
+        glEnableVertexAttribArray(0);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
+        glVertexAttribPointer(
+            0,        // attribute
+            3,        // size
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0,        // stride
+            (void *)0 // array buffer offset
+        );
+
+        glEnableVertexAttribArray(4);
+        glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
+        glVertexAttribPointer(
+            4,        // attribute
+            3,        // size
+            GL_FLOAT, // type
+            GL_FALSE, // normalized?
+            0,        // stride
+            (void *)0 // array buffer offset
+        );
+
+        // Index buffer
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
+
+        // Draw the triangles !
+
+        glDrawElements(
+            GL_TRIANGLES,               // mode
+            this->mesh->indices.size(), // count
+            GL_UNSIGNED_SHORT,          // type
+            (void *)0                   // element array buffer offset
+        );
+
+        glDisableVertexAttribArray(0);
+        glDisableVertexAttribArray(1);
+        glDisableVertexAttribArray(2);
+        /*
+                    glDeleteBuffers(1, &vertexbuffer);
+                    glDeleteBuffers(1, &elementbuffer);*/
     }
-    else{
-        glUniform1i(hasTextureID, GL_FALSE);
-    }
-    
-    glUniform1i(glGetUniformLocation(this->shader, "albedoMap"), 1);
-    glUniform1i(glGetUniformLocation(this->shader, "normalMap"), 2);
-    glUniform1i(glGetUniformLocation(this->shader, "metallicMap"), 3);
-    glUniform1i(glGetUniformLocation(this->shader, "roughnessMap"), 4);
-    glUniform1i(glGetUniformLocation(this->shader, "aoMap"), 5); 
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.albedo);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.normal);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.metallic);
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.roughness);
-    glActiveTexture(GL_TEXTURE5);
-    glBindTexture(GL_TEXTURE_2D, this->PBRMaterials.ao);
-
-    glEnableVertexAttribArray(1);
-    glBindBuffer(GL_ARRAY_BUFFER, uvbuffer);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void *)0);
-
-    
-    // DRAW
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexbuffer);
-    glVertexAttribPointer(
-        0,        // attribute
-        3,        // size
-        GL_FLOAT, // type
-        GL_FALSE, // normalized?
-        0,        // stride
-        (void *)0 // array buffer offset
-    );
-
-    glEnableVertexAttribArray(4);
-    glBindBuffer(GL_ARRAY_BUFFER, normalbuffer);
-    glVertexAttribPointer(
-        4,        // attribute
-        3,        // size
-        GL_FLOAT, // type
-        GL_FALSE, // normalized?
-        0,        // stride
-        (void *)0 // array buffer offset
-    );
-
-    // Index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementbuffer);
-
-    // Draw the triangles !
-
-    glDrawElements(
-        GL_TRIANGLES,               // mode
-        this->mesh->indices.size(), // count
-        GL_UNSIGNED_SHORT,          // type
-        (void *)0                   // element array buffer offset
-    );
-
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    /*
-                glDeleteBuffers(1, &vertexbuffer);
-                glDeleteBuffers(1, &elementbuffer);*/
 }

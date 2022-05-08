@@ -182,15 +182,24 @@ int main(void)
     unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
-    PhysicsObject *terrain = plane_uniquePtr.get();
+    PhysicsObject *terrain1 = plane_uniquePtr.get();
+    unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    // PhysicsObject *terrain2 = plane2_uniquePtr.get();
+    // unique_ptr<PhysicsObject> plane3_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    // PhysicsObject *terrain3 = plane3_uniquePtr.get();
+    // unique_ptr<PhysicsObject> rampe_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    // PhysicsObject *rampe = rampe_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("PO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("Player", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Earth = Earth_uniquePtr.get();
-    unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("GO_EarthRotation", SPHERE, 1.0f, modelID, programID);
-    GameObject *EarthRotation = EarthRotation_uniquePtr.get();
+    Earth->addVisualSphereRotation();
+    // unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("GO_EarthRotation", SPHERE, 1.0f, modelID, programID);
+    // GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_MoonStatic", SPHERE, 1.0f, modelID, programID, 10.0f, -gravity, false);
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_Moon", SPHERE, 1.0f, modelID, programID, 10.0f, -gravity, false);
     PhysicsObject *Moon = Moon_uniquePtr.get();
+    unique_ptr<GameObject> MoonRotation_uniquePtr = make_unique<GameObject>("GO_MoonRotation", SPHERE, 1.0f, modelID, programID);
+    GameObject *MoonRotation = MoonRotation_uniquePtr.get();
     unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Sun = Sun_uniquePtr.get();
 
@@ -202,10 +211,12 @@ int main(void)
     // --------------------
     // Textures
     // terrain->applyTexture(smiley_texture, TextureID);
-    Earth->ToDraw(false);
+    // Earth->ToDraw(false);
     // EarthRotation->applyTexture(earth_texture, TextureID);
+    // Moon->ToDraw(false);
     Moon->applyTexture(moon_texture, TextureID);
-    EarthRotation->applyMaterial(&crystal);
+    // MoonRotation->applyTexture(moon_texture, TextureID);
+    Earth->applyMaterial(&crystal);
     Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
     CubeFall->applyTexture(dice_texture, TextureID);
@@ -214,8 +225,9 @@ int main(void)
     // --------------------
     // Définition des liens de parenté entre objets
     // terrain->addChild(move(Earth_uniquePtr));
-    Earth->addChild(move(EarthRotation_uniquePtr));
+    // Earth->addChild(move(EarthRotation_uniquePtr));
     Earth->addChild(move(defaultCamera_ptr));
+    // Moon->addChild(move(MoonRotation_uniquePtr));
 
     // --------------------
     // Transformatios des objets dans l'espace local
@@ -226,7 +238,9 @@ int main(void)
     cam->transform->setLocalTranslation(vec3(0, -20, 10));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
-    terrain->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
+    terrain1->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
+    // terrain2->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
+    // terrain2->transform->setLocalTranslation(vec3(0.0f, -5.0f, 0.0f));
     // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
@@ -234,6 +248,7 @@ int main(void)
 
     Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
     Moon->transform->setLocalTranslation(vec3(2.5f, 2.5f, 0.0f));
+    Moon->addVisualSphereRotation();
     // Moon->transform->setLocalTranslation(vec3(0.0f, 2.0f, 1.5f));
 
     Sun->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
@@ -248,10 +263,11 @@ int main(void)
     // Add Objects to Scene
     scene->addLight(light);
     scene->addCamera(cam);
-    scene->addPhysicsObject(terrain);
+    scene->addPhysicsObject(terrain1);
     scene->addPhysicsObject(Earth);
-    scene->addObject(EarthRotation);
+    // scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
+    // scene->addObject(MoonRotation);
     scene->addPhysicsObject(Sun);
     scene->addObject(skybox);
     // scene->addPhysicsObject(Cube);
@@ -305,7 +321,8 @@ int main(void)
 
         // --------------------
         // Update Objects
-        terrain->updateSelfAndChild();
+        terrain1->updateSelfAndChild();
+        // terrain2->updateSelfAndChild();
         Earth->updateSelfAndChild();
         Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();

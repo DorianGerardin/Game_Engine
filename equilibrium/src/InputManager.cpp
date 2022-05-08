@@ -74,8 +74,10 @@ public:
 		this->cam = cam;
 		this->scene = scene;
 
-		physicsBallObject = this->scene->PhysicsObjectList[1];
-		textureBallObject = this->scene->objects[2];
+		// physicsBallObject = this->scene->PhysicsObjectList[1];
+		// textureBallObject = this->scene->objects[2];
+		physicsBallObject = this->scene->getPhysicsObjectFromId("Player");
+		textureBallObject = physicsBallObject->rotationObject;
 	}
 
 	~InputManager()

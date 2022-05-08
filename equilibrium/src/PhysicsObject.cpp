@@ -70,6 +70,14 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
 }
 PhysicsObject ::~PhysicsObject() {}
 
+void PhysicsObject ::addVisualSphereRotation(){
+    // cout << "VisualSphereRotation added" << endl; 
+    if (this->mesh->objectType == SPHERE){
+        this->hasRotationObject = true;
+        this->rotationObject = new GameObject(this->id + "_rotation", this->mesh->objectType, this->mesh->size, this->mesh->modelID, this->shader);
+    }
+}
+
 bool PhysicsObject ::isStatic()
 {
     return is_static;
