@@ -36,6 +36,15 @@ void Scene::addLight(LightObject *light)
     this->light = light;
 }
 
+void Scene::addPlayer(PhysicsObject *player)
+{
+    this->player = player;
+}
+
+PhysicsObject* Scene::getPlayer(){
+    return this->player;
+}
+
 void Scene::addPhysicsObject(PhysicsObject *physicsObject)
 {
     addObject(physicsObject);
@@ -67,7 +76,7 @@ void Scene::Step(float dt)
 {
 
     ResolveCollisions(dt);
-
+    float radiusPlayer = player->mesh->size * player->transform->getLocalScale().x;
     for (PhysicsObject *obj : PhysicsObjectList)
     {
         if (obj->isDynamic())
@@ -105,9 +114,10 @@ void Scene::Step(float dt)
             
             if (obj->hasRotationObject){
                 cout << obj->rotationObject->id << endl;
-                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != "Player") {
+                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != this->player->id) {
                     vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
-                    obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y*dt*70, -obj->velocity.x*dt*70, 0));
+                    float radius = radiusPlayer / (obj->mesh->size * obj->transform->getLocalScale().x);
+                    obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y*dt*150 * radius, -obj->velocity.x*dt*150 * radius, 0));
                 }
             }
 

@@ -98,6 +98,9 @@ float GameObject::heightInTriangle(Mesh *mesh)
 
 void GameObject::applyTexture(GLuint texture, GLuint textureID)
 {
+    if (this->hasRotationObject){
+        this->rotationObject->applyTexture(texture, textureID);
+    }
     this->hasTexture = true;
     this->mesh->texture = texture;
     this->mesh->textureID = textureID;

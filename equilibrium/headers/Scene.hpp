@@ -51,6 +51,7 @@ public:
     vector<CameraObject *> cameras;
     vector<PhysicsObject *> PhysicsObjectList;
     vector<Solver *> SolverList;
+    PhysicsObject *player;
 
 public:
     Scene();
@@ -76,6 +77,8 @@ public:
 
     GameObject* getGameObjectFromId(string);
     PhysicsObject* getPhysicsObjectFromId(string);
+    void addPlayer(PhysicsObject *);
+    PhysicsObject* getPlayer();
 };
 
 #endif // SCENE_HPP

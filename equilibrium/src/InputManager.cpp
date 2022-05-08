@@ -76,7 +76,7 @@ public:
 
 		// physicsBallObject = this->scene->PhysicsObjectList[1];
 		// textureBallObject = this->scene->objects[2];
-		physicsBallObject = this->scene->getPhysicsObjectFromId("Player");
+		physicsBallObject = this->scene->getPlayer();
 		textureBallObject = physicsBallObject->rotationObject;
 	}
 
@@ -151,7 +151,7 @@ public:
 		camTransform = this->cam->transform;
 		// glfwSetScrollCallback(window, scroll_callback);
 
-		// TODO add translations
+		
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 			camTransform->translation += glm::normalize(glm::cross(this->cam->up, this->cam->target)) * cameraSpeed;
 		camTransform = this->cam->transform;

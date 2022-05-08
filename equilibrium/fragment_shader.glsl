@@ -112,10 +112,9 @@ void main(){
 	    float ao        = texture(aoMap, UV).r;
 
 	    vec3 N = getNormalFromMap();
-	    vec3 V = normalize(camPos - WorldPos);
-
-	    // calculate reflectance at normal incidence; if dia-electric (like plastic) use F0 
-	    // of 0.04 and if it's a metal, use the albedo color as F0 (metallic workflow)    
+	    // vec3 V = normalize(camPos - WorldPos);
+		vec3 V = normalize(vec3(1.));
+ 
 	    vec3 F0 = vec3(0.04); 
 	    F0 = mix(F0, albedo, metallic);
 	    // reflectance equation
@@ -125,7 +124,6 @@ void main(){
 	    vec3 L = normalize(light.position - WorldPos);
 	    vec3 H = normalize(V + L);
 	    float distance = length(light.position - WorldPos);
-	    // float attenuation = 1.0 / (distance * distance);
 	    float attenuation = 1.0 / distance;
 	    vec3 radiance = light.material.ambient * attenuation;
 
@@ -156,7 +154,7 @@ void main(){
 	    Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // note that we already multiplied the BRDF by the Fresnel (kS) so we won't multiply by kS again
 
 
-	    vec3 ambient = vec3(0.1) * albedo * ao;
+	    vec3 ambient = vec3(0.05) * albedo * ao;
 	    // vec3 ambient = vec3(0.3) * albedo * ao;
 	    
 	    color = ambient + Lo;

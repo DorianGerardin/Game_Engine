@@ -122,6 +122,20 @@ int main(void)
     crystal.roughness = "textures/crystal/roughness.bmp";
     crystal.ao        = "textures/crystal/ao.bmp";
 
+    Material abstract;
+    abstract.albedo = "textures/abstract1/albedo.bmp";
+    abstract.normal    = "textures/abstract1/normal.bmp";
+    abstract.metallic  = "textures/abstract1/metallic.bmp";
+    abstract.roughness = "textures/abstract1/roughness.bmp";
+    abstract.ao        = "textures/abstract1/ao.bmp";
+
+    Material fabric;
+    fabric.albedo = "textures/fabric1/albedo.bmp";
+    fabric.normal    = "textures/fabric1/normal.bmp";
+    fabric.metallic  = "textures/fabric1/metallic.bmp";
+    fabric.roughness = "textures/fabric1/roughness.bmp";
+    fabric.ao        = "textures/fabric1/ao.bmp";
+
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
     GLuint moon_texture = loadBMP_custom("textures/moonTexture.bmp");
     GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
@@ -129,7 +143,7 @@ int main(void)
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
     GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
-    GLuint skybox_texture = loadBMP_custom("textures/skybox.bmp");
+    GLuint skybox_texture = loadBMP_custom("textures/skybox2.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     // glActiveTexture(GL_TEXTURE0);
@@ -184,13 +198,13 @@ int main(void)
     // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
     PhysicsObject *terrain1 = plane_uniquePtr.get();
     unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
-    // PhysicsObject *terrain2 = plane2_uniquePtr.get();
-    // unique_ptr<PhysicsObject> plane3_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
-    // PhysicsObject *terrain3 = plane3_uniquePtr.get();
+    PhysicsObject *terrain2 = plane2_uniquePtr.get();
+    unique_ptr<PhysicsObject> plane3_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
+    PhysicsObject *terrain3 = plane3_uniquePtr.get();
     // unique_ptr<PhysicsObject> rampe_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
     // PhysicsObject *rampe = rampe_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("Player", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("PO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
     PhysicsObject *Earth = Earth_uniquePtr.get();
     Earth->addVisualSphereRotation();
     // unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("GO_EarthRotation", SPHERE, 1.0f, modelID, programID);
@@ -214,9 +228,10 @@ int main(void)
     // Earth->ToDraw(false);
     // EarthRotation->applyTexture(earth_texture, TextureID);
     // Moon->ToDraw(false);
+    // Earth->applyTexture(moon_texture, TextureID);
     Moon->applyTexture(moon_texture, TextureID);
     // MoonRotation->applyTexture(moon_texture, TextureID);
-    Earth->applyMaterial(&crystal);
+    Earth->applyMaterial(&fabric);
     Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
     CubeFall->applyTexture(dice_texture, TextureID);
@@ -239,8 +254,8 @@ int main(void)
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain1->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
-    // terrain2->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
-    // terrain2->transform->setLocalTranslation(vec3(0.0f, -5.0f, 0.0f));
+    terrain2->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
+    terrain2->transform->setLocalTranslation(vec3(0.0f, -5.0f, 0.0f));
     // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
 
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
@@ -261,9 +276,11 @@ int main(void)
 
     // --------------------
     // Add Objects to Scene
+    scene->addPlayer(Earth);
     scene->addLight(light);
     scene->addCamera(cam);
     scene->addPhysicsObject(terrain1);
+    scene->addPhysicsObject(terrain2);
     scene->addPhysicsObject(Earth);
     // scene->addObject(EarthRotation);
     scene->addPhysicsObject(Moon);
@@ -322,7 +339,7 @@ int main(void)
         // --------------------
         // Update Objects
         terrain1->updateSelfAndChild();
-        // terrain2->updateSelfAndChild();
+        terrain2->updateSelfAndChild();
         Earth->updateSelfAndChild();
         Moon->updateSelfAndChild();
         Sun->updateSelfAndChild();
