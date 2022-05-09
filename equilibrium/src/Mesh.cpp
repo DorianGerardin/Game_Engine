@@ -19,7 +19,6 @@ Mesh::Mesh(string filename, GLint modelID)
     if (!extension.compare("off"))
     {
         loadOFF(filename, this->indexed_vertices, this->indices);
-        
     }
     if (!extension.compare("obj"))
         loadOBJ(filename, this->indexed_vertices, this->indices, this->uv, this->vericesNormals);
@@ -47,10 +46,10 @@ void Mesh::generateMesh()
 {
     if (this->objectType == SPHERE)
         this->generateSphere();
-    else if (this->objectType == PLANE){
+    else if (this->objectType == PLANE)
         this->generatePlane();
-        // this->computeNormals();
-    }
+    else if (this->objectType == INFINITE_PLANE)
+        this->generatePlane();
     else if (this->objectType == CUBE)
         this->generateCube();
     else
@@ -145,7 +144,6 @@ void Mesh::generatePlane()
     indices.push_back(2);
     indices.push_back(3);
     indices.push_back(0);
-
 }
 
 void Mesh::generateSphere()
@@ -346,47 +344,49 @@ void Mesh::generateCube()
     this->computeNormals();
 }
 
+void Mesh::computeFaceNormals()
+{
 
-void Mesh::computeFaceNormals(){
-    
-    int facesNb = (int)indices.size()/3;
+    int facesNb = (int)indices.size() / 3;
     faceNormals.clear();
-    faceNormals.resize(facesNb,vec3(0.));
-    vec3 e_10,e_20,n;
-    for (int i = 0; i < facesNb; i++){
-        e_10 = indexed_vertices[indices[i*3 + 1]] - indexed_vertices[indices[i*3 + 0]];
-        e_20 = indexed_vertices[indices[i*3 + 2]] - indexed_vertices[indices[i*3 + 0]];
+    faceNormals.resize(facesNb, vec3(0.));
+    vec3 e_10, e_20, n;
+    for (int i = 0; i < facesNb; i++)
+    {
+        e_10 = indexed_vertices[indices[i * 3 + 1]] - indexed_vertices[indices[i * 3 + 0]];
+        e_20 = indexed_vertices[indices[i * 3 + 2]] - indexed_vertices[indices[i * 3 + 0]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
-        faceNormals[i] = cross(e_10, e_20); 
-        
+        faceNormals[i] = cross(e_10, e_20);
+
         faceNormals[i] = normalize(faceNormals[i]);
-        
     }
 }
 
-//Compute vertices normals as the average of its incident faces normals
-void Mesh::computeVerticesNormals(){
-    
+// Compute vertices normals as the average of its incident faces normals
+void Mesh::computeVerticesNormals()
+{
+
     vericesNormals.clear();
     int normales_size = indexed_vertices.size(),
         faces_size = (int)faceNormals.size();
-    vericesNormals.resize(normales_size,vec3(0.));
+    vericesNormals.resize(normales_size, vec3(0.));
 
-    for (int face = 0; face < faces_size; face++){
-        for (int sommet = 0; sommet < 3; sommet++){
-            vericesNormals[indices[face*3 + sommet]] += faceNormals[face]; 
-           
+    for (int face = 0; face < faces_size; face++)
+    {
+        for (int sommet = 0; sommet < 3; sommet++)
+        {
+            vericesNormals[indices[face * 3 + sommet]] += faceNormals[face];
         }
     }
-    for (int sommet = 0; sommet < normales_size; sommet++){
+    for (int sommet = 0; sommet < normales_size; sommet++)
+    {
         vericesNormals[sommet] = normalize(vericesNormals[sommet]);
     }
-        
 }
 
-void Mesh::computeNormals(){
+void Mesh::computeNormals()
+{
     computeFaceNormals();
     computeVerticesNormals();
 }
-

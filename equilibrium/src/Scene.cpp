@@ -38,10 +38,12 @@ void Scene::addLight(LightObject *light)
 
 void Scene::addPlayer(PhysicsObject *player)
 {
+    player->setPlayer(true);
     this->player = player;
 }
 
-PhysicsObject* Scene::getPlayer(){
+PhysicsObject *Scene::getPlayer()
+{
     return this->player;
 }
 
@@ -109,15 +111,16 @@ void Scene::Step(float dt)
             // cout << obj->id << " :  "<< "obj->velocity = " << obj->velocity << endl;
             obj->position += obj->velocity * dt;
 
-
             obj->transform->setLocalTranslation(obj->position);
-            
-            if (obj->hasRotationObject){
-                //cout << obj->rotationObject->id << endl;
-                if((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) /*&& obj->id != this->player->id*/) {
+
+            if (obj->hasRotationObject)
+            {
+                // cout << obj->rotationObject->id << endl;
+                if ((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) /*&& obj->id != this->player->id*/)
+                {
                     vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
                     float radius = radiusPlayer / (obj->mesh->size * obj->transform->getLocalScale().x);
-                    obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y*dt*150 * radius, -obj->velocity.x*dt*150 * radius, 0));
+                    obj->rotationObject->transform->setLocalRotation(actualRotation - vec3(obj->velocity.y * dt * 150 * radius, -obj->velocity.x * dt * 150 * radius, 0));
                 }
             }
 
@@ -126,10 +129,25 @@ void Scene::Step(float dt)
     }
 }
 
+void Scene::SendCollisionCallbacks(vector<Collision> &collisions, float dt)
+{
+    for (Collision &collision : collisions)
+    {
+        // cout << collision.ObjA->id << " et " << collision.ObjB->id << endl;
+        auto &a = collision.ObjA->onCollision;
+        auto &b = collision.ObjB->onCollision;
+
+        if (a)
+            a(collision.ObjB);
+        if (b)
+            b(collision.ObjA);
+    }
+}
 void Scene::ResolveCollisions(float dt)
 {
     // Generate List of collisions
     std::vector<Collision> collisions;
+    std::vector<Collision> triggers;
     for (PhysicsObject *a : PhysicsObjectList)
     {
         for (PhysicsObject *b : PhysicsObjectList)
@@ -152,25 +170,62 @@ void Scene::ResolveCollisions(float dt)
                 collision.ObjA = a;
                 collision.ObjB = b;
                 collision.Points = points;
-                collisions.emplace_back(collision);
+
+                if (a->is_trigger || b->is_trigger)
+                {
+                    triggers.emplace_back(collision);
+                }
+                else
+                {
+                    collisions.emplace_back(collision);
+
+                    if (a->isPlayer() && b->mesh->objectType == PLANE)
+                    {
+                        a->onSurface = true;
+                        a->sphereOnPlaneObject = b;
+                        cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
+                    }
+                    else if (a->mesh->objectType == PLANE && b->isPlayer())
+                    {
+                        b->onSurface = true;
+                        b->sphereOnPlaneObject = a;
+                        cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
+                    }
+                }
             }
             else
             {
                 // cout << "PAS DE COLLISION" << endl;
+                // if (a->isPlayer())
+                // {
+                //     a->onSurface = false;
+                //     a->sphereOnPlaneObject = nullptr;
+                //     cout << "pas contact" << endl;
+                // }
+                // if (b->isPlayer())
+                // {
+                //     b->onSurface = false;
+                //     b->sphereOnPlaneObject = nullptr;
+                //     cout << "pas contact" << endl;
+                // }
             }
         }
     }
 
-    // Solve Collisions
+    // Solve Collisions (not triggers)
     for (Solver *solver : SolverList)
     {
         // cout << "test avant " << solver->returnSolverID() << endl;
         solver->Solve(collisions, dt);
         // cout << "test après " << solver->returnSolverID() << endl;
     }
+
+    // SendCollisionCallbacks(collisions, dt);
+    SendCollisionCallbacks(triggers, dt);
 }
 
-void Scene::update() {
+void Scene::update()
+{
     for (int i = 0; i < objects.size(); i++)
     {
         if (!objects[i]->parent)
@@ -188,10 +243,10 @@ void Scene::update() {
     }
 }
 
-
-GameObject* Scene::getGameObjectFromId(string id){
+GameObject *Scene::getGameObjectFromId(string id)
+{
     for (auto &object : this->objects) // access by reference to avoid copying
-    {  
+    {
         if (object->id == id)
         {
             return object;
@@ -200,13 +255,14 @@ GameObject* Scene::getGameObjectFromId(string id){
     return NULL;
 }
 
-PhysicsObject* Scene::getPhysicsObjectFromId(string id){
-    
+PhysicsObject *Scene::getPhysicsObjectFromId(string id)
+{
+
     for (auto &object : this->PhysicsObjectList) // access by reference to avoid copying
-    {  
+    {
         if (object->id == id)
         {
-            cout << "object->id " <<object->id << endl;
+            cout << "object->id " << object->id << endl;
             return object;
         }
     }

@@ -3,6 +3,14 @@
 
 #include "Transform.hpp"
 #include "PhysicsObject.hpp"
+
+class SphereCollider;
+class PlaneCollider;
+class AABBCollider;
+class PhysicsObject;
+
+//-------------------------------------------------------------------------------------------------
+
 struct CollisionPoints
 {
     vec3 A;      // Furthest point of A into B
@@ -12,12 +20,12 @@ struct CollisionPoints
     bool HasCollision = false;
 };
 
-//-------------------------------------------------------------------------------------------------
-class SphereCollider;
-class PlaneCollider;
-class AABBCollider;
-class PhysicsObject;
-
+struct Collision
+{
+    PhysicsObject *ObjA;
+    PhysicsObject *ObjB;
+    CollisionPoints Points;
+};
 //-------------------------------------------------------------------------------------------------
 
 CollisionPoints FindSphereSphereCollisionPoints(const SphereCollider *a, const Transform *ta,
@@ -164,18 +172,7 @@ public:
         const SphereCollider *sphere,
         const Transform *sphereTransform) const override
     {
-        // CollisionPoints points = sphere->TestCollision(sphereTransform, this, transform);
-
-        // // swap
-        // glm::vec3 T = points.A;
-        // points.A = points.B;
-        // points.B = T;
-
-        // points.Normal = -points.Normal;
-
-        // return points;
-
-        return FindSphereAABBCollisionPoints(sphere, transform, this, sphereTransform);
+        return FindSphereAABBCollisionPoints(sphere, sphereTransform, this, transform);
     }
 
     CollisionPoints TestCollision(
@@ -195,16 +192,8 @@ public:
     }
 
     vec3 closestPointAABB(const vec3 point, const Transform *tb) const;
-    float SqDistPointAABB(const vec3 point, const Transform *tb) const;
 };
 
-//-------------------------------------------------------------------------------------------------
-struct Collision
-{
-    PhysicsObject *ObjA;
-    PhysicsObject *ObjB;
-    CollisionPoints Points;
-};
 //-------------------------------------------------------------------------------------------------
 // Implémenter Impulse ou Postition Solver
 class Solver

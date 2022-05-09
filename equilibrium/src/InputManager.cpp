@@ -17,8 +17,8 @@ float rotationZ = 0.0f;
 float rotationNoStop = 0.0f;
 float speedRotation = 2.5f;
 
-float speedBall = 0.05f;
-float speedJump = 10.0f;
+float speedBall = 8.0f;
+float speedJump = 1500.0f;
 
 vec3 actualBallPosition, actualBallRotation;
 
@@ -38,9 +38,15 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS)
 	{
 		// cout << "Jump" << endl;
-
+		// cout << physicsBallObject->onSurface << " " << deltaTime << endl;
 		// Attention ! doit dépendre de la normale de la surface sur laquelle on est
-		physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump);
+
+		if (physicsBallObject->onSurface)
+		{
+			physicsBallObject->onSurface = false;
+			physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump) * deltaTime;
+		}
+		// physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump) * deltaTime;
 	}
 
 	// Change to Material 1
@@ -77,6 +83,7 @@ public:
 		// physicsBallObject = this->scene->PhysicsObjectList[1];
 		// textureBallObject = this->scene->objects[2];
 		physicsBallObject = this->scene->getPlayer();
+		// cout << physicsBallObject->id << endl;
 		textureBallObject = physicsBallObject->rotationObject;
 	}
 
@@ -151,7 +158,6 @@ public:
 		camTransform = this->cam->transform;
 		// glfwSetScrollCallback(window, scroll_callback);
 
-		
 		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 			camTransform->translation += glm::normalize(glm::cross(this->cam->up, this->cam->target)) * cameraSpeed;
 		camTransform = this->cam->transform;
@@ -168,26 +174,28 @@ public:
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		{
-			physicsBallObject->velocity += vec3(-speedBall, 0.0f, 0.0f);
-			//textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation, 0.0f));
+			physicsBallObject->velocity += vec3(-speedBall, 0.0f, 0.0f) * deltaTime;
+			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation, 0.0f));
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		{
-			physicsBallObject->velocity += vec3(0.0f, -speedBall, 0.0f);
-			//textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation, 0.0f, 0.0f));
+			physicsBallObject->velocity += vec3(0.0f, -speedBall, 0.0f) * deltaTime;
+			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation, 0.0f, 0.0f));
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
 		{
-			physicsBallObject->velocity += vec3(speedBall, 0.0f, 0.0f);
-			//textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation, 0.0f));
+			// cout << deltaTime << endl;
+			physicsBallObject->velocity += vec3(speedBall, 0.0f, 0.0f) * deltaTime;
+			// cout << physicsBallObject->velocity << endl;
+			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation, 0.0f));
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		{
-			physicsBallObject->velocity += vec3(0.0f, speedBall, 0.0f);
-			//textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation, 0.0f, 0.0f));
+			physicsBallObject->velocity += vec3(0.0f, speedBall, 0.0f) * deltaTime;
+			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation, 0.0f, 0.0f));
 		}
 	}
 

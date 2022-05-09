@@ -28,16 +28,17 @@ enum Type
     MESH,
     SPHERE,
     CUBE,
-    PLANE
+    PLANE,
+    INFINITE_PLANE
 };
 
-// enum MaterialType
-// {
-//     BRICK,
-//     ICE,
-//     RUBBER,
-//     CRYSTAL
-// };
+enum MaterialType
+{
+    BRICK,
+    ICE,
+    RUBBER,
+    CRYSTAL
+};
 
 class Mesh
 {
@@ -70,7 +71,6 @@ private:
     void generateSphere();
     void computeFaceNormals();
     void computeVerticesNormals();
-    
 };
 
 #endif // MESH_HPP

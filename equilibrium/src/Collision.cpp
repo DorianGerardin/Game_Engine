@@ -52,7 +52,18 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
     // Utiliser des quaternions
     // vec3 N = b->Plane * tb->getLocalRotation();
     // N = normalize(N);
-    vec3 N = normalize(b->Normal);
+
+    vec3 normal = vec3(0.0f, 0.0f, 1.0f);
+    if (tb->getLocalRotation() == vec3(0.0f, 0.0f, 0.0f))
+        normal = vec3(0.0f, 0.0f, 1.0f);
+    if (tb->getLocalRotation().x == 90.0f)
+        normal = vec3(0.0f, -1.0f, 0.0f);
+    if (tb->getLocalRotation().y == 90.0f)
+        normal = vec3(-1.0f, 0.0f, 0.0f);
+
+    // cout << "normal = " << normal << endl;
+    vec3 N = normalize(normal);
+    // vec3 N = normalize(b->Normal * tb->getLocalRotation());
 
     vec3 P = N * b->Distance + tb->getLocalTranslation();
 
@@ -79,6 +90,7 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
     A = A - N * Ar;
 
     // Collision
+    // cout << "COLLISION" << endl;
     return {
         A, B,
         normalize(N),
@@ -90,9 +102,12 @@ CollisionPoints FindSpherePlaneCollisionPoints(const SphereCollider *a, const Tr
 vec3 AABBCollider::closestPointAABB(const vec3 point, const Transform *tb) const
 {
     vec3 result = point;
-    vec3 min = this->minValue + tb->getLocalTranslation();
-    vec3 max = this->maxValue + tb->getLocalTranslation();
+    // vec3 min = (this->minValue * tb->getLocalScale().x) + tb->getLocalTranslation();
+    // vec3 max = (this->maxValue * tb->getLocalScale().x) + tb->getLocalTranslation();
+    vec3 min = vec3(this->minValue.x * tb->getLocalScale().x, this->minValue.y * tb->getLocalScale().y, this->minValue.z * tb->getLocalScale().z) + tb->getLocalTranslation();
+    vec3 max = vec3(this->maxValue.x * tb->getLocalScale().x, this->maxValue.y * tb->getLocalScale().y, this->maxValue.z * tb->getLocalScale().z) + tb->getLocalTranslation();
     // cout << "min = " << min << ", max = " << max << endl;
+    // cout << "tb->getLocalScale() = " << tb->getLocalScale() << endl;
 
     // Clamp the closest point to the min point of the AABB:
     // result.x = (result.x < min.x) ? min.x : result.x;
@@ -111,21 +126,15 @@ vec3 AABBCollider::closestPointAABB(const vec3 point, const Transform *tb) const
     result.z = std::min(result.z, max.z);
     return result;
 }
-float AABBCollider::SqDistPointAABB(const vec3 point, const Transform *tb) const
-{
-    float result = length(this->closestPointAABB(point, tb) - point);
-    return result;
-}
+
 CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Transform *ta,
                                               const AABBCollider *b, const Transform *tb)
 {
-    float dist;
-
     vec3 A = a->Center + ta->getLocalTranslation();
     // Attention :  doit être le scale MONDE
     float Ar = a->Radius * ta->getLocalScale().x;
 
-    // cout << "A de centre " << A << " et de rayon " << Ar;
+    // cout << "A de centre " << A << " et de rayon " << Ar << endl;
 
     // Find point (p) on AABB closest to Sphere center
     vec3 p = b->closestPointAABB(A, tb);
@@ -140,8 +149,6 @@ CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Tra
     {
         // cout << "COLLISION\n"
         //      << endl;
-        dist = b->SqDistPointAABB(A, tb);
-
         // Calculate normal using sphere center a closest point on AABB
         vec3 normal = normalize(p - A);
 
@@ -153,8 +160,6 @@ CollisionPoints FindSphereAABBCollisionPoints(const SphereCollider *a, const Tra
             // Sphere is inside AABB
             AtoB = vec3(0.0f, 1.0f, 0.0f);
         }
-
-        float dsqrd = length(AtoB);
 
         return {
             A, B,
@@ -192,15 +197,12 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
     // 5. Check for overlap with the min and max points of the rectangles
     if ((aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y) && (aMin.z <= bMax.z && aMax.z >= bMin.z))
     {
-        cout << "COLLISION" << endl;
+        // cout << "COLLISION" << endl;
 
-        // float dist = b->SqDistPointAABB(A, tb);
+        vec3 A = aMax;
+        vec3 B = bMin;
 
-        // // Calculate normal using sphere center a closest point on AABB
-        // vec3 normal = normalize(p - A);
-
-        // vec3 B = p - normal * Ar;
-        // vec3 AtoB = B - A;
+        vec3 AtoB = B - A;
 
         // if (AtoB == vec3(0.0f, 0.0f, 0.0f))
         // {
@@ -208,23 +210,21 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
         //     AtoB = vec3(0.0f, 1.0f, 0.0f);
         // }
 
-        // float dsqrd = length(AtoB);
+        return {
+            A, B,
+            normalize(AtoB),
+            length(AtoB),
+            true};
 
         // return {
-        //     A, B,
-        //     normalize(AtoB),
-        //     length(AtoB),
-        //     true};
-
-        return {
-            vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
-            vec3(0.0f, 0.0f, 0.0f),
-            0,
-            false};
+        //     vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+        //     vec3(0.0f, 0.0f, 0.0f),
+        //     0,
+        //     false};
     }
     else
     {
-        cout << "PAS COLLISION" << endl;
+        // cout << "PAS COLLISION" << endl;
 
         return {
             vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
@@ -244,6 +244,7 @@ void PositionSolver::Solve(vector<Collision> &collisions, float dt)
         // cout << "PositionSolver" << endl;
         PhysicsObject *aBody = collision.ObjA;
         PhysicsObject *bBody = collision.ObjB;
+        // cout << "Collision entre " << aBody->id << " et " << bBody->id << endl;
 
         vec3 resolution = collision.Points.B - collision.Points.A;
         // cout << this->old_resolution - resolution << endl;
@@ -253,19 +254,17 @@ void PositionSolver::Solve(vector<Collision> &collisions, float dt)
         {
             // aBody->velocity -= resolution;
             vec3 aBodyNewTranslation = aBody->transform->getLocalTranslation() - resolution;
+            // cout << "aBodyNewTranslation = " << aBodyNewTranslation << endl;
             aBody->transform->setLocalTranslation(aBodyNewTranslation);
         }
 
         if (bBody->isDynamic())
         {
             vec3 bBodyNewTranslation = bBody->transform->getLocalTranslation() + resolution;
+            // cout << "bBodyNewTranslation = " << bBodyNewTranslation << esndl;
+
             bBody->transform->setLocalTranslation(bBodyNewTranslation);
         }
-        // }
-        // else
-        // {
-        //     cout << "trop petit déplacement" << endl;
-        // }
     }
 }
 

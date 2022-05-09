@@ -42,7 +42,7 @@ class Scene
 {
 
 private:
-    //CAMERA defaultCamera;
+    // CAMERA defaultCamera;
     unique_ptr<CameraObject> defaultCamera_ptr;
     LightObject *light;
 
@@ -71,15 +71,16 @@ public:
     void addSolver(Solver *solver);
     void removeSolver(Solver *solver);
     void Step(float dt);
+    void SendCollisionCallbacks(vector<Collision> &collisions, float dt);
     void ResolveCollisions(float dt);
 
     void update();
     void draw();
 
-    GameObject* getGameObjectFromId(string);
-    PhysicsObject* getPhysicsObjectFromId(string);
+    GameObject *getGameObjectFromId(string);
+    PhysicsObject *getPhysicsObjectFromId(string);
     void addPlayer(PhysicsObject *);
-    PhysicsObject* getPlayer();
+    PhysicsObject *getPlayer();
 };
 
 #endif // SCENE_HPP
