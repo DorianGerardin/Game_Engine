@@ -197,18 +197,18 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
     // 5. Check for overlap with the min and max points of the rectangles
     if ((aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y) && (aMin.z <= bMax.z && aMax.z >= bMin.z))
     {
-        // cout << "COLLISION" << endl;
+        cout << "COLLISION" << endl;
 
         vec3 A = aMax;
         vec3 B = bMin;
 
         vec3 AtoB = B - A;
 
-        // if (AtoB == vec3(0.0f, 0.0f, 0.0f))
-        // {
-        //     // Sphere is inside AABB
-        //     AtoB = vec3(0.0f, 1.0f, 0.0f);
-        // }
+        if (AtoB == vec3(0.0f, 0.0f, 0.0f))
+        {
+            cout << "aabb inside aabb" << endl;
+            AtoB = vec3(0.0f, 0.0f, 1.0f);
+        }
 
         return {
             A, B,
@@ -224,7 +224,7 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
     }
     else
     {
-        // cout << "PAS COLLISION" << endl;
+        cout << "PAS COLLISION : aMin = " << aMin << " aMax =" << aMax << " bMin = " << bMin << " bMax =" << bMax << endl;
 
         return {
             vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),

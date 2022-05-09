@@ -41,7 +41,7 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
     {
         AABBCollider *aabbCollider = new AABBCollider();
         aabbCollider->minValue = vec3(0.0f, 0.0f, 0.0f);
-        aabbCollider->maxValue = vec3(this->mesh->size, this->mesh->size, 0.000001f);
+        aabbCollider->maxValue = vec3(this->mesh->size, this->mesh->size, 0.001f);
         this->collider = aabbCollider;
     }
     if (this->mesh->objectType == INFINITE_PLANE)

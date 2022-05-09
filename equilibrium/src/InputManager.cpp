@@ -17,8 +17,8 @@ float rotationZ = 0.0f;
 float rotationNoStop = 0.0f;
 float speedRotation = 2.5f;
 
-float speedBall = 8.0f;
-float speedJump = 1500.0f;
+float speedBall = 11.0f;
+float speedJump = 8.0f;
 
 vec3 actualBallPosition, actualBallRotation;
 
@@ -44,7 +44,8 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 		if (physicsBallObject->onSurface)
 		{
 			physicsBallObject->onSurface = false;
-			physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump) * deltaTime;
+			physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump);
+			// physicsBallObject->acceleration += vec3(0.0f, 0.0f, speedJump) * deltaTime;
 		}
 		// physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump) * deltaTime;
 	}
@@ -175,27 +176,25 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(-speedBall, 0.0f, 0.0f) * deltaTime;
-			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation, 0.0f));
+			// physicsBallObject->acceleration += vec3(-speedBall, 0.0f, 0.0f) * deltaTime;
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(0.0f, -speedBall, 0.0f) * deltaTime;
-			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation, 0.0f, 0.0f));
+			// physicsBallObject->acceleration += vec3(0.0f, -speedBall, 0.0f) * deltaTime;
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
 		{
-			// cout << deltaTime << endl;
 			physicsBallObject->velocity += vec3(speedBall, 0.0f, 0.0f) * deltaTime;
-			// cout << physicsBallObject->velocity << endl;
-			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation, 0.0f));
+			// physicsBallObject->acceleration += vec3(speedBall, 0.0f, 0.0f) * deltaTime;
 		}
 		updateBallPositionAndRotation();
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(0.0f, speedBall, 0.0f) * deltaTime;
-			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation, 0.0f, 0.0f));
+			// physicsBallObject->acceleration += vec3(0.0f, speedBall, 0.0f) * deltaTime;
 		}
 	}
 

@@ -149,6 +149,13 @@ int main(void)
     concrete.roughness = "textures/concrete/roughness.bmp";
     concrete.ao = "textures/concrete/ao.bmp";
 
+    Material lava;
+    lava.albedo = "textures/lava/albedo.bmp";
+    lava.normal = "textures/lava/normal.bmp";
+    lava.metallic = "textures/lava/metallic.bmp";
+    lava.roughness = "textures/lava/roughness.bmp";
+    lava.ao = "textures/lava/ao.bmp";
+
     GLuint earth_texture = loadBMP_custom("textures/earthTexture.bmp");
     GLuint moon_texture = loadBMP_custom("textures/moonTexture.bmp");
     GLuint sun_texture = loadBMP_custom("textures/sunTexture.bmp");
@@ -179,8 +186,8 @@ int main(void)
     double lastTime = glfwGetTime();
     int nbFrames = 0;
     float earthGravity = 9.81f;
-    // float gravity = earthGravity;
-    float gravity = 2.5f;
+    float gravity = earthGravity;
+    // float gravity = 2.5f;
 
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
@@ -206,35 +213,32 @@ int main(void)
     CameraObject *cam = defaultCamera_ptr.get();
     cam->ToDraw(false);
 
-    unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan1", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
-    PhysicsObject *terrain1 = plane_uniquePtr.get();
-    // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface.off", modelID, programID, 0.0f, 0.0f);
-    // unique_ptr<PhysicsObject> plane_uniquePtr = make_unique<PhysicsObject>("PO_Plan", "objects/plane_surface_relief.off", modelID, programID, 0.0f, 0.0f);
-    unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan2", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
-    PhysicsObject *terrain2 = plane2_uniquePtr.get();
-    unique_ptr<PhysicsObject> plane3_uniquePtr = make_unique<PhysicsObject>("PO_Plan3", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
-    PhysicsObject *terrain3 = plane3_uniquePtr.get();
-    // unique_ptr<PhysicsObject> rampe_uniquePtr = make_unique<PhysicsObject>("PO_Plan", PLANE, 1.0f, modelID, programID, 1.0f, 0.0f, true);
-    // PhysicsObject *rampe = rampe_uniquePtr.get();
-
-    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("PO_Earth", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    unique_ptr<PhysicsObject> Earth_uniquePtr = make_unique<PhysicsObject>("PO_Earth", SPHERE, 1.0f, modelID, programID, 50.0f, -gravity, false);
     PhysicsObject *Earth = Earth_uniquePtr.get();
     // Earth->setPlayer(true);
     Earth->addVisualSphereRotation();
-    // unique_ptr<GameObject> EarthRotation_uniquePtr = make_unique<GameObject>("GO_EarthRotation", SPHERE, 1.0f, modelID, programID);
-    // GameObject *EarthRotation = EarthRotation_uniquePtr.get();
 
-    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_Moon", SPHERE, 1.0f, modelID, programID, 10.0f, -gravity, false);
+    unique_ptr<PhysicsObject> plane1_uniquePtr = make_unique<PhysicsObject>("PO_Plan1", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *terrain1 = plane1_uniquePtr.get();
+    unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan2", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *terrain2 = plane2_uniquePtr.get();
+    unique_ptr<PhysicsObject> plateforme1_uniquePtr = make_unique<PhysicsObject>("PO_Plateforme1", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *plateforme1 = plateforme1_uniquePtr.get();
+
+    unique_ptr<PhysicsObject> lavaPlane_uniquePtr = make_unique<PhysicsObject>("PO_LAVA_PLANE", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *lavaPlane = lavaPlane_uniquePtr.get();
+    lavaPlane->setTrigger(true);
+    lavaPlane->setTriggerType(MOVE_TO_LAST_CHECKPOINT);
+
+    unique_ptr<PhysicsObject> plateforme2_uniquePtr = make_unique<PhysicsObject>("PO_Plateforme1", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    PhysicsObject *plateforme2 = plateforme2_uniquePtr.get();
+
+    unique_ptr<PhysicsObject> Moon_uniquePtr = make_unique<PhysicsObject>("PO_Moon", SPHERE, 1.0f, modelID, programID, 30.0f, -gravity, false);
     PhysicsObject *Moon = Moon_uniquePtr.get();
-    unique_ptr<GameObject> MoonRotation_uniquePtr = make_unique<GameObject>("GO_MoonRotation", SPHERE, 1.0f, modelID, programID);
-    GameObject *MoonRotation = MoonRotation_uniquePtr.get();
-    unique_ptr<PhysicsObject> Sun_uniquePtr = make_unique<PhysicsObject>("PO_SunFall", SPHERE, 1.0f, modelID, programID, 5.0f, -gravity, false);
-    PhysicsObject *Sun = Sun_uniquePtr.get();
-    Sun->addVisualSphereRotation();
 
     unique_ptr<PhysicsObject> Cube_uniquePtr = make_unique<PhysicsObject>("PO_Cube", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *Cube = Cube_uniquePtr.get();
-    unique_ptr<PhysicsObject> CubeFall_uniquePtr = make_unique<PhysicsObject>("PO_CubeFall", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, false);
+    unique_ptr<PhysicsObject> CubeFall_uniquePtr = make_unique<PhysicsObject>("PO_CubeFall", CUBE, 1.0f, modelID, programID, 30.0f, -gravity, false);
     PhysicsObject *CubeFall = CubeFall_uniquePtr.get();
 
     unique_ptr<PhysicsObject> planeFall_uniquePtr = make_unique<PhysicsObject>("PO_PlaneFall", INFINITE_PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
@@ -245,15 +249,9 @@ int main(void)
 
     unique_ptr<PhysicsObject> checkpoint1_uniquePtr = make_unique<PhysicsObject>("PO_CHECKPOINT", INFINITE_PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *checkpoint1 = checkpoint1_uniquePtr.get();
-    checkpoint1->ToDraw(true);
+    checkpoint1->ToDraw(false);
     checkpoint1->setTrigger(true);
     checkpoint1->setTriggerType(UPDATE_LAST_CHECKPOINT);
-
-    unique_ptr<PhysicsObject> checkpoint2_uniquePtr = make_unique<PhysicsObject>("PO_CHECKPOINT2", INFINITE_PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
-    PhysicsObject *checkpoint2 = checkpoint2_uniquePtr.get();
-    checkpoint2->ToDraw(true);
-    checkpoint2->setTrigger(true);
-    checkpoint2->setTriggerType(UPDATE_LAST_CHECKPOINT);
 
     // --------------------
     // Textures
@@ -264,13 +262,15 @@ int main(void)
     // Earth->applyTexture(moon_texture, TextureID);
     terrain1->applyMaterial(&concrete);
     terrain2->applyMaterial(&ice);
+    plateforme1->applyMaterial(&concrete);
+    lavaPlane->applyMaterial(&lava);
+    plateforme2->applyMaterial(&concrete);
+
     // terrain2->applyMaterial(ICE);
     checkpoint1->applyTexture(smiley_texture, TextureID);
-    checkpoint2->applyTexture(smiley_texture, TextureID);
     Moon->applyTexture(moon_texture, TextureID);
     // MoonRotation->applyTexture(moon_texture, TextureID);
     Earth->applyMaterial(&fabric);
-    Sun->applyTexture(sun_texture, TextureID);
     Cube->applyTexture(dice_texture, TextureID);
     CubeFall->applyTexture(dice_texture, TextureID);
     skybox->applyTexture(skybox_texture, TextureID);
@@ -292,57 +292,57 @@ int main(void)
     cam->transform->setLocalTranslation(vec3(0, -20, 10));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
-    terrain1->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
-    terrain2->transform->setLocalScale(vec3(5.0f, 5.0f, 5.0f));
-    terrain2->transform->setLocalTranslation(vec3(5.0f, 0.0f, 1.0f));
-    // terrain->transform->setLocalRotation(vec3(-90.0f, 0.0f, 0.0f));
+    terrain1->transform->setLocalScale(vec3(10.0f, 10.0f, 10.0f));
+
+    terrain2->transform->setLocalScale(vec3(10.0f, 10.0f, 10.0f));
+    terrain2->transform->setLocalTranslation(vec3(10.0f, 0.0f, -2.0f));
+
+    checkpoint1->transform->setLocalScale(vec3(5.0f, 2.0f, 1.0f));
+    checkpoint1->transform->setLocalRotation(vec3(0.0f, 90.0f, 0.0f));
+    checkpoint1->transform->setLocalTranslation(vec3(20.0f, 5.0f, 2.0f));
+
+    plateforme1->transform->setLocalScale(vec3(2.5f, 10.0f, 3.0f));
+    plateforme1->transform->setLocalTranslation(vec3(21.0f, 5.0f, -0.5f));
+
+    lavaPlane->transform->setLocalScale(vec3(10.0f, 10.0f, 10.0f));
+    lavaPlane->transform->setLocalTranslation(vec3(22.0f, 0.0f, -2.0f));
+
+    plateforme2->transform->setLocalScale(vec3(5.0f, 10.0f, 3.0f));
+    plateforme2->transform->setLocalTranslation(vec3(31.0f, 5.0f, -0.5f));
 
     planeFall->transform->setLocalScale(vec3(100.0f, 100.0f, 100.0f));
     planeFall->transform->setLocalTranslation(vec3(0.0f, 0.0f, -5.0f));
 
-    checkpoint1->transform->setLocalScale(vec3(5.0f, 2.0f, 1.0f));
-    checkpoint1->transform->setLocalRotation(vec3(0.0f, 90.0f, 0.0f));
-    checkpoint1->transform->setLocalTranslation(vec3(5.50f, 2.0f, 1.0f));
-
-    checkpoint2->transform->setLocalScale(vec3(5.0f, 2.0f, 1.0f));
-    checkpoint2->transform->setLocalRotation(vec3(0.0f, 90.0f, 0.0f));
-    checkpoint2->transform->setLocalTranslation(vec3(4.505f, 2.0f, 0.0f));
-
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
-    Earth->transform->setLocalTranslation(vec3(2.5f, 0.0f, 2.0f));
+    Earth->transform->setLocalTranslation(vec3(2.5f, 0.0f, 3.0f));
 
-    Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
-    Moon->transform->setLocalTranslation(vec3(2.5f, 2.5f, 2.0f));
+    // Moon->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
+    Moon->transform->setLocalTranslation(vec3(5.5f, 5.0f, 5.0f));
     Moon->addVisualSphereRotation();
     // Moon->transform->setLocalTranslation(vec3(0.0f, 2.0f, 1.5f));
 
-    Sun->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
-    Sun->transform->setLocalTranslation(vec3(2.2f, 2.2f, 2.5f));
-    // Sun->transform->setLocalTranslation(vec3(1.7f, 0.5f, 2.5f));
+    // Cube->transform->setLocalTranslation(vec3(0.1f, 0.1f, 0.7f));
 
-    Cube->transform->setLocalTranslation(vec3(1.0f, 0.5f, 0.7f));
-
-    CubeFall->transform->setLocalTranslation(vec3(1.7f, 0.5f, 3.5f));
+    // CubeFall->transform->setLocalTranslation(vec3(0.1f, 0.1f, 6.5f));
 
     // --------------------
     // Add Objects to Scene
     scene->addPlayer(Earth);
     scene->addLight(light);
     scene->addCamera(cam);
+    scene->addObject(skybox);
     scene->addPhysicsObject(Earth);
 
-    // scene->addObject(EarthRotation);
+    scene->addPhysicsObject(planeFall);
     scene->addPhysicsObject(Moon);
-    // scene->addObject(MoonRotation);
-    scene->addPhysicsObject(Sun);
-    scene->addObject(skybox);
-    // scene->addPhysicsObject(Cube);
-    // scene->addPhysicsObject(CubeFall);
     scene->addPhysicsObject(terrain1);
     scene->addPhysicsObject(terrain2);
-    scene->addPhysicsObject(planeFall);
+    scene->addPhysicsObject(lavaPlane);
     scene->addPhysicsObject(checkpoint1);
-    // scene->addPhysicsObject(checkpoint2);
+    scene->addPhysicsObject(plateforme1);
+    scene->addPhysicsObject(plateforme2);
+    // scene->addPhysicsObject(Cube);
+    // scene->addPhysicsObject(CubeFall);
 
     PositionSolver *positionSolver = new PositionSolver();
     ImpulseSolver *impulseSolver = new ImpulseSolver();

@@ -18,7 +18,7 @@ class PhysicsObject : public GameObject
 public:
     vec3 position = this->transform->getLocalTranslation();
     vec3 velocity = vec3(0.0f, 0.0f, 0.0f);
-    float maxVelocity = 2.5f;
+    float maxVelocity = 5.5f;
     vec3 force;
 
     float mass;

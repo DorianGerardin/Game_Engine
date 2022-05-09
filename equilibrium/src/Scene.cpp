@@ -83,12 +83,11 @@ void Scene::Step(float dt)
     {
         if (obj->isDynamic())
         {
-            // Force de gravité = Poids : W = m*g
-            // obj->force += obj->mass * obj->gravity; // apply a force
-            obj->force += obj->mass * (obj->gravity + obj->acceleration); // apply a force
-            // cout << obj->id << " :  "<< "force = " << obj->force << ", masse= " << obj->mass << ", gravité= " << obj->gravity << endl;
+            // Force de gravité : Poids : W = m*g
+            // Force résultante :         F = m*a
+            obj->force = obj->mass * (obj->gravity + obj->acceleration); // apply a force
 
-            // cout << "obj->velocity = " << obj->velocity << " + " << (obj->force / obj->mass) * dt << " = " << obj->velocity + (obj->force / obj->mass) * dt << endl;
+            // v = v0 + at = v0 + F/m *t
             obj->velocity += (obj->force / obj->mass) * dt;
             // cout << (obj->force / obj->mass) * dt << endl;
             // cout << obj->id << " :  " << obj->velocity << endl;
@@ -102,14 +101,13 @@ void Scene::Step(float dt)
                 obj->velocity.y = obj->maxVelocity;
             if (obj->velocity.y < -obj->maxVelocity)
                 obj->velocity.y = -obj->maxVelocity;
-            if (obj->velocity.z > obj->maxVelocity)
-                obj->velocity.z = obj->maxVelocity;
-            if (obj->velocity.z < -obj->maxVelocity)
-                obj->velocity.z = -obj->maxVelocity;
+            // if (obj->velocity.z > obj->maxVelocity)
+            //     obj->velocity.z = obj->maxVelocity;
+            // if (obj->velocity.z < -obj->maxVelocity)
+            //     obj->velocity.z = -obj->maxVelocity;
 
-            obj->position = obj->transform->getLocalTranslation();
-            // cout << obj->id << " :  "<< "obj->velocity = " << obj->velocity << endl;
-            obj->position += obj->velocity * dt;
+            // x = x0 + vt
+            obj->position = obj->transform->getLocalTranslation() + obj->velocity * dt;
 
             obj->transform->setLocalTranslation(obj->position);
 
@@ -124,7 +122,7 @@ void Scene::Step(float dt)
                 }
             }
 
-            obj->force = vec3(0, 0, 0); // réinitialise la force résultante à la fin
+            obj->acceleration = vec3(0, 0, 0); // réinitialise l'accélération
         }
     }
 }
@@ -183,13 +181,13 @@ void Scene::ResolveCollisions(float dt)
                     {
                         a->onSurface = true;
                         a->sphereOnPlaneObject = b;
-                        cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
+                        // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
                     }
                     else if (a->mesh->objectType == PLANE && b->isPlayer())
                     {
                         b->onSurface = true;
                         b->sphereOnPlaneObject = a;
-                        cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
+                        // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
                     }
                 }
             }
