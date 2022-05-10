@@ -10,7 +10,8 @@ struct Collider;
 enum TriggerType
 {
     MOVE_TO_LAST_CHECKPOINT,
-    UPDATE_LAST_CHECKPOINT
+    UPDATE_LAST_CHECKPOINT,
+    LEVEL_COMPLETE
 };
 
 class PhysicsObject : public GameObject
@@ -29,7 +30,7 @@ public:
     bool is_trigger = false;
     std::function<void(PhysicsObject *)> onCollision;
 
-    vec3 lastCheckpoint = vec3(0.0f, 0.0f, 0.5f);
+    vec3 lastCheckpoint = vec3(5.0f, 0.5f, 5.0f);
 
     Collider *collider;
 
@@ -45,12 +46,13 @@ public:
 
 public:
     PhysicsObject();
-    PhysicsObject(string id, string filename, GLint modelID, GLuint shader, float mass, float gravity, bool is_static);
+    PhysicsObject(string id, string filename, float size, GLint modelID, GLuint shader, float mass, float gravity, bool is_static);
     PhysicsObject(string id, int meshType, float size, GLint modelID, GLuint shader, float mass, float gravity, bool is_static);
     ~PhysicsObject();
 
     void addVisualSphereRotation();
-    void applyMaterial(Material *material);
+    void applyPhysicsMaterial(int materialName);
+    void setPhysicsCoeffs(float, float, float);
 
     bool isPlayer();
     bool isStatic();
@@ -63,6 +65,7 @@ public:
 
     void moveToLastCheckpoint(PhysicsObject *);
     void updateLastCheckpoint(PhysicsObject *);
+    void levelComplete(PhysicsObject *);
 };
 
 #endif

@@ -1,19 +1,24 @@
 #include "../headers/PhysicsObject.hpp"
 
-PhysicsObject::PhysicsObject(string id, string filename, GLint modelID, GLuint shader, float mass, float gravity, bool is_static)
+PhysicsObject::PhysicsObject(string id, string filename, float size, GLint modelID, GLuint shader, float mass, float gravity, bool is_static)
 {
     this->id = id;
     this->transform = new Transform();
     this->mesh = new Mesh(filename, modelID);
+    this->parent = nullptr;
     this->shader = shader;
     this->useHeightMap = GL_FALSE;
     this->hasTexture = false;
 
     this->mass = mass;
     this->is_static = is_static;
-
     // this->gravity = vec3(0.0f, gravity, 0.0f);
     this->gravity = vec3(0.0f, 0.0f, gravity);
+
+    SphereCollider *sphereCollider = new SphereCollider();
+    sphereCollider->Center = this->transform->getWorldTranslation();
+    sphereCollider->Radius = 0.5f;
+    this->collider = sphereCollider;
 }
 
 PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID, GLuint shader, float mass, float gravity, bool is_static)
@@ -73,26 +78,31 @@ void PhysicsObject ::addVisualSphereRotation()
     }
 }
 
-void PhysicsObject::applyMaterial(Material *material)
+void PhysicsObject::applyPhysicsMaterial(int materialName)
 {
-    if (this->hasRotationObject)
-    {
-        this->rotationObject->PBRMaterials.albedo = loadBMP_custom(material->albedo);
-        this->rotationObject->PBRMaterials.normal = loadBMP_custom(material->normal);
-        this->rotationObject->PBRMaterials.metallic = loadBMP_custom(material->metallic);
-        this->rotationObject->PBRMaterials.roughness = loadBMP_custom(material->roughness);
-        this->rotationObject->PBRMaterials.ao = loadBMP_custom(material->ao);
-    }
-    else
-    {
-        this->PBRMaterials.albedo = loadBMP_custom(material->albedo);
-        this->PBRMaterials.normal = loadBMP_custom(material->normal);
-        this->PBRMaterials.metallic = loadBMP_custom(material->metallic);
-        this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
-        this->PBRMaterials.ao = loadBMP_custom(material->ao);
-    }
+    // if (this->hasRotationObject)
+    // {
+    //     this->rotationObject->PBRMaterials.albedo = loadBMP_custom(material->albedo);
+    //     this->rotationObject->PBRMaterials.normal = loadBMP_custom(material->normal);
+    //     this->rotationObject->PBRMaterials.metallic = loadBMP_custom(material->metallic);
+    //     this->rotationObject->PBRMaterials.roughness = loadBMP_custom(material->roughness);
+    //     this->rotationObject->PBRMaterials.ao = loadBMP_custom(material->ao);
+    // }
+    // else
+    // {
+    //     this->PBRMaterials.albedo = loadBMP_custom(material->albedo);
+    //     this->PBRMaterials.normal = loadBMP_custom(material->normal);
+    //     this->PBRMaterials.metallic = loadBMP_custom(material->metallic);
+    //     this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
+    //     this->PBRMaterials.ao = loadBMP_custom(material->ao);
+    // }
 }
-
+void PhysicsObject::setPhysicsCoeffs(float staticFriction, float kineticFriction, float restitution)
+{
+    this->staticFriction = staticFriction;
+    this->kineticFriction = kineticFriction;
+    this->restitution = restitution;
+}
 bool PhysicsObject::isPlayer()
 {
     return this->is_player;
@@ -129,6 +139,8 @@ void PhysicsObject::setTriggerType(int type)
 
     if (type == UPDATE_LAST_CHECKPOINT)
         this->onCollision = std::bind(&PhysicsObject::updateLastCheckpoint, this, _1);
+    if (type == LEVEL_COMPLETE)
+        this->onCollision = std::bind(&PhysicsObject::levelComplete, this, _1);
 }
 
 void PhysicsObject::moveToLastCheckpoint(PhysicsObject *obj)
@@ -154,5 +166,14 @@ void PhysicsObject::updateLastCheckpoint(PhysicsObject *obj)
     else
     {
         // cout << this->id << " is not player" << endl;
+    }
+}
+
+void PhysicsObject::levelComplete(PhysicsObject *obj)
+{
+    if (obj->isPlayer())
+    {
+        cout << "Level Complete !" << endl;
+        exit(0);
     }
 }

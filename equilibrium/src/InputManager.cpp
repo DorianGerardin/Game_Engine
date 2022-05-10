@@ -18,7 +18,7 @@ float rotationNoStop = 0.0f;
 float speedRotation = 2.5f;
 
 float speedBall = 11.0f;
-float speedJump = 8.0f;
+float speedJump = 6.5f;
 
 vec3 actualBallPosition, actualBallRotation;
 
@@ -43,8 +43,11 @@ void key_callback(GLFWwindow *window, int key, int scancode, int action, int mod
 
 		if (physicsBallObject->onSurface)
 		{
-			physicsBallObject->onSurface = false;
+			physicsBallObject->transform->setLocalTranslation(physicsBallObject->transform->getLocalTranslation() + vec3(0.0f, 0.0f, 0.01f));
+			physicsBallObject->velocity.z = 0.0f;
 			physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump);
+			physicsBallObject->onSurface = false;
+
 			// physicsBallObject->acceleration += vec3(0.0f, 0.0f, speedJump) * deltaTime;
 		}
 		// physicsBallObject->velocity += vec3(0.0f, 0.0f, speedJump) * deltaTime;

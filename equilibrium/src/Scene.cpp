@@ -76,7 +76,6 @@ void Scene::removeSolver(Solver *solver)
 }
 void Scene::Step(float dt)
 {
-
     ResolveCollisions(dt);
     float radiusPlayer = player->mesh->size * player->transform->getLocalScale().x;
     for (PhysicsObject *obj : PhysicsObjectList)
@@ -177,17 +176,21 @@ void Scene::ResolveCollisions(float dt)
                 {
                     collisions.emplace_back(collision);
 
-                    if (a->isPlayer() && b->mesh->objectType == PLANE)
+                    if (a->isPlayer() && (b->mesh->objectType == PLANE || b->mesh->objectType == CUBE))
                     {
                         a->onSurface = true;
                         a->sphereOnPlaneObject = b;
+                        a->setPhysicsCoeffs(b->staticFriction, b->kineticFriction, b->restitution);
                         // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
+                        cout << a->id << " on surface " << a->sphereOnPlaneObject->id << " --> coeffs : " << a->staticFriction << " " << a->kineticFriction << " " << a->restitution << endl;
                     }
-                    else if (a->mesh->objectType == PLANE && b->isPlayer())
+                    else if ((a->mesh->objectType == PLANE || a->mesh->objectType == CUBE) && b->isPlayer())
                     {
                         b->onSurface = true;
                         b->sphereOnPlaneObject = a;
+                        b->setPhysicsCoeffs(a->staticFriction, a->kineticFriction, a->restitution);
                         // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
+                        cout << b->id << " on surface " << b->sphereOnPlaneObject->id << " --> coeffs : " << b->staticFriction << " " << b->kineticFriction << " " << b->restitution << endl;
                     }
                 }
             }
@@ -276,10 +279,11 @@ void Scene::draw()
             glUseProgram(LightList[0]->shader);
             glUniform1i(glGetUniformLocation(LightList[0]->shader, "nbLights"), LightList.size());
             // cout << "Draw " << objects[i]->id << " avec " <<LightList.size() <<  " lights"<<endl;
-            for (int j = 0; j < LightList.size(); j++){
+            for (int j = 0; j < LightList.size(); j++)
+            {
                 LightList[j]->draw(j);
             }
-            
+
             objects[i]->draw();
         }
     }

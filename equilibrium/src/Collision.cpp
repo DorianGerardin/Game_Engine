@@ -189,26 +189,50 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
                                             const AABBCollider *b, const Transform *tb)
 {
     // Find the min and max points of the first AABB
-    vec3 aMin = a->minValue + ta->getLocalTranslation();
-    vec3 aMax = a->maxValue + ta->getLocalTranslation();
+    vec3 aMin = a->minValue * ta->getLocalScale() + ta->getLocalTranslation();
+    vec3 aMax = a->maxValue * ta->getLocalScale() + ta->getLocalTranslation();
     // 4. Find the min and max points of the second AABB
-    vec3 bMin = b->minValue + tb->getLocalTranslation();
-    vec3 bMax = b->maxValue + tb->getLocalTranslation();
+    vec3 bMin = b->minValue * tb->getLocalScale() + tb->getLocalTranslation();
+    vec3 bMax = b->maxValue * tb->getLocalScale() + tb->getLocalTranslation();
     // 5. Check for overlap with the min and max points of the rectangles
-    if ((aMin.x <= bMax.x && aMax.x >= bMin.x) && (aMin.y <= bMax.y && aMax.y >= bMin.y) && (aMin.z <= bMax.z && aMax.z >= bMin.z))
+    if ((aMin.x < bMax.x && aMax.x > bMin.x) && (aMin.y < bMax.y && aMax.y > bMin.y) && (aMin.z < bMax.z && aMax.z > bMin.z))
     {
-        cout << "COLLISION" << endl;
-
-        vec3 A = aMax;
-        vec3 B = bMin;
-
-        vec3 AtoB = B - A;
-
-        if (AtoB == vec3(0.0f, 0.0f, 0.0f))
+        // cout << "COLLISION : aMin = " << aMin << " aMax =" << aMax << " bMin = " << bMin << " bMax =" << bMax << endl;
+        vec3 A = vec3(0.0f, 0.0f, 0.0f);
+        vec3 B = vec3(0.0f, 0.0f, 0.0f);
+        vec3 AtoB = vec3(0.0f, 0.0f, 0.0f);
+        if (bMax.z > aMax.z)
         {
-            cout << "aabb inside aabb" << endl;
-            AtoB = vec3(0.0f, 0.0f, 1.0f);
+            A = vec3(aMin.x, bMax.y, bMax.z);
+            // cout << "haut : B - A =" << B << " - " << A << " = " << B - A << "\n\n"
+            // << endl;
+            B = bMin;
+            A = vec3(bMin.x, bMin.y, aMax.z);
         }
+        else if (bMax.z < aMax.z && bMin.x < aMin.x)
+        {
+            B = bMax;
+            A = vec3(aMin.x, bMax.y, bMax.z);
+            // cout << "gauche : B - A =" << B << " - " << A << " = " << B - A << "\n\n"
+            // << endl;
+        }
+        else if (bMax.z < aMax.z && aMax.x > bMin.x)
+        {
+            B = bMin;
+            A = vec3(aMax.x, bMin.y, bMin.z);
+            // cout << "droite : B - A =" << B << " - " << A << " = " << B - A << "\n\n"
+            // << endl;
+        }
+        else
+        {
+            return {
+                vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
+                vec3(0.0f, 0.0f, 0.0f),
+                0,
+                false};
+        }
+
+        AtoB = B - A;
 
         return {
             A, B,
@@ -224,7 +248,7 @@ CollisionPoints FindAABBAABBCollisionPoints(const AABBCollider *a, const Transfo
     }
     else
     {
-        cout << "PAS COLLISION : aMin = " << aMin << " aMax =" << aMax << " bMin = " << bMin << " bMax =" << bMax << endl;
+        // cout << "PAS COLLISION : aMin = " << aMin << " aMax =" << aMax << " bMin = " << bMin << " bMax =" << bMax << endl;
 
         return {
             vec3(0.0f, 0.0f, 0.0f), vec3(0.0f, 0.0f, 0.0f),
