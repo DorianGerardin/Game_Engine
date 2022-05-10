@@ -495,9 +495,6 @@ int main(void)
         GLint cameraPosID = glGetUniformLocation(programID, "camPos");
         glUniformMatrix3fv(cameraPosID, 1, GL_FALSE, &cam->transform->getLocalTranslation().x);
 
-        vec3 actualCamRotation = cam->transform->getLocalRotation();
-        cam->transform->setLocalRotation(vec3(actualCamRotation.x, actualCamRotation.y, actualCamRotation.z));
-
         // Update Objects
         scene->update();
 
