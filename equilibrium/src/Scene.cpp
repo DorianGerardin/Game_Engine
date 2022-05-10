@@ -100,10 +100,10 @@ void Scene::Step(float dt)
                 obj->velocity.y = obj->maxVelocity;
             if (obj->velocity.y < -obj->maxVelocity)
                 obj->velocity.y = -obj->maxVelocity;
-            // if (obj->velocity.z > obj->maxVelocity)
-            //     obj->velocity.z = obj->maxVelocity;
-            // if (obj->velocity.z < -obj->maxVelocity)
-            //     obj->velocity.z = -obj->maxVelocity;
+            // if (obj->velocity.z > obj->maxVelocityZ)
+            //     obj->velocity.z = obj->maxVelocityZ;
+            if (obj->velocity.z < -obj->maxVelocityZ)
+                obj->velocity.z = -obj->maxVelocityZ;
 
             // x = x0 + vt
             obj->position = obj->transform->getLocalTranslation() + obj->velocity * dt;

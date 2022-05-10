@@ -213,9 +213,9 @@ int main(void)
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-    float earthGravity = 2.5f;
+    float earthGravity = 9.81f;
     float gravity = earthGravity;
-    // float gravity = 2.5f;
+    // float gravity = 0.5f;
 
     // --------------------------------------------------------------------------------------------
     // |                                         SCENE                                            |
@@ -233,7 +233,7 @@ int main(void)
 
     unique_ptr<LightObject> light2_uniquePtr = make_unique<LightObject>(programID);
     LightObject *light_terrain1_2 = light2_uniquePtr.get();
-    light_terrain1_2->position = vec3(5., 5.,0.9 );
+    light_terrain1_2->position = vec3(5., 5.,0.7 );
 
     unique_ptr<LightObject> light3_uniquePtr = make_unique<LightObject>(programID);
     LightObject *light_terrain1_3 = light3_uniquePtr.get();
@@ -332,13 +332,15 @@ int main(void)
     // Earth->setPlayer(true);
     Earth->addVisualSphereRotation();
 
-    unique_ptr<PhysicsObject> plane1_uniquePtr = make_unique<PhysicsObject>("PO_Plan1", PLANE, 1.0f, modelID, programID, 5.0f, 0.0f, true);
+    unique_ptr<PhysicsObject> plane1_uniquePtr = make_unique<PhysicsObject>("PO_Plan1", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *terrain1 = plane1_uniquePtr.get();
+    // unique_ptr<PhysicsObject> plane1_uniquePtr = make_unique<PhysicsObject>("PO_Plan1", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
+    // PhysicsObject *terrain1 = plane1_uniquePtr.get();
     terrain1->setPhysicsCoeffs(0.7f, 0.6f, 1.0f);
 
     unique_ptr<PhysicsObject> plane2_uniquePtr = make_unique<PhysicsObject>("PO_Plan2", PLANE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *terrain2 = plane2_uniquePtr.get();
-    terrain2->setPhysicsCoeffs(0.2f, 0.1f, 1.0f);
+    terrain2->setPhysicsCoeffs(0.7f, 0.25f, 1.0f);
 
     unique_ptr<PhysicsObject> plateforme0_uniquePtr = make_unique<PhysicsObject>("PO_Plateforme0", CUBE, 1.0f, modelID, programID, 5.0f, -gravity, true);
     PhysicsObject *plateforme0 = plateforme0_uniquePtr.get();
@@ -427,6 +429,8 @@ int main(void)
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain1->transform->setLocalScale(vec3(10.0f, 10.0f, 10.0f));
+    // terrain1->transform->setLocalScale(vec3(10.0f, 10.0f, 2.0f));
+    // terrain1->transform->setLocalTranslation(vec3(5.0f, 5.0f, -1.0f));
     plateforme0->transform->setLocalScale(vec3(1.0f, 10.0f, 2.0f));
     plateforme0->transform->setLocalTranslation(vec3(9.5f, 5.0f, -1.0f));
 
@@ -450,14 +454,15 @@ int main(void)
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
     Earth->transform->setLocalTranslation( vec3(5.0f, 0.5f, 10.0f)); //25.9f, 5.0f, -1.8f vec3(5.0f, 0.5f, 10.0f)
 
-    ballBrick->transform->setLocalTranslation(vec3(5.5f, 5.0f, 5.0f));
+    ballBrick->transform->setLocalTranslation(vec3(6.3f, 5.0f, 23.0f));
     // ballBrick->addVisualSphereRotation();
 
     ballFabric->transform->setLocalScale(vec3(0.5f, 0.5f, 0.5f));
-    ballFabric->transform->setLocalTranslation(vec3(5.35f, 4.95, 8.0f));
+    ballFabric->transform->setLocalTranslation(vec3(5.9f, 4.95, 25.0f));
     // ballFabric->addVisualSphereRotation();
 
-    CubeFall->transform->setLocalTranslation(vec3(3.0f, 5.0f, 6.5f));
+    CubeFall->transform->setLocalTranslation(vec3(2.9f, 5.0f, 22.0f));
+
 
     endLevel->transform->setLocalRotation(vec3(0.0f, 90.0f, 0.0f));
     endLevel->transform->setLocalTranslation(vec3(31.0f, 7.5f, 2.5f));

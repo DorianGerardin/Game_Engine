@@ -17,7 +17,7 @@ float rotationZ = 0.0f;
 float rotationNoStop = 0.0f;
 float speedRotation = 2.5f;
 
-float speedBall = 11.0f;
+float speedBall = 9.0f;
 float speedJump = 6.5f;
 
 vec3 actualBallPosition, actualBallRotation;
