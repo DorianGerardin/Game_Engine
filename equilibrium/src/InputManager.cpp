@@ -117,9 +117,6 @@ public:
 
 		glm::vec3 camera_right = glm::vec3(1.0f, 0.0f, 0.0f);
 
-		// if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
-		//   		wireframe_mode = !wireframe_mode;
-
 		// rotationX
 		if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
 			rotationX += 1;
@@ -168,7 +165,7 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_KP_4) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(-speedBall, 0.0f, 0.0f) * deltaTime;
-			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation, 0.0f));
+			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, speedRotation*(-physicsBallObject->velocity.x), 0.0f));
 			// float radiusPlayer = textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x;
 			// float radius = radiusPlayer / (textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x);
 			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0, -(physicsBallObject->velocity.x) * deltaTime * 150 * radius, 0));
@@ -177,7 +174,7 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_KP_5) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(0.0f, -speedBall, 0.0f) * deltaTime;
-			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation, 0.0f, 0.0f));
+			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x + speedRotation*(-physicsBallObject->velocity.y), 0.0f, 0.0f));
 			/*float radiusPlayer = textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x;
 			float radius = radiusPlayer / (textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x);*/
 			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation - vec3(physicsBallObject->velocity.y * deltaTime * 150 * radius, 0, 0)));
@@ -186,7 +183,7 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_KP_6) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(speedBall, 0.0f, 0.0f) * deltaTime;
-			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation, 0.0f));
+			textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0.0f, -speedRotation*(physicsBallObject->velocity.x), 0.0f));
 			// float radiusPlayer = textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x;
 			// float radius = radiusPlayer / (textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x);
 			// textureBallObject->transform->setLocalRotation(actualBallRotation - vec3(0, -(physicsBallObject->velocity.x) * deltaTime * 150 * radius, 0));
@@ -195,7 +192,7 @@ public:
 		if (glfwGetKey(window, GLFW_KEY_KP_8) == GLFW_PRESS)
 		{
 			physicsBallObject->velocity += vec3(0.0f, speedBall, 0.0f) * deltaTime;
-			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation, 0.0f, 0.0f));
+			textureBallObject->transform->setLocalRotation(vec3(actualBallRotation.x - speedRotation*(physicsBallObject->velocity.y), 0.0f, 0.0f));
 			// float radiusPlayer = textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x;
 			// float radius = radiusPlayer / (textureBallObject->mesh->size * textureBallObject->transform->getLocalScale().x);
 			// textureBallObject->transform->setLocalRotation(vec3(actualBallRotation - vec3(physicsBallObject->velocity.y * deltaTime * 150 * radius, 0, 0)));

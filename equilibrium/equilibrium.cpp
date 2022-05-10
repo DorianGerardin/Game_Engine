@@ -57,7 +57,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     // Open a window and create its OpenGL context
-    window = glfwCreateWindow(1024*2, 768*2, "Equilibrium - GLFW", NULL, NULL);
+    window = glfwCreateWindow(1024, 768, "Equilibrium - GLFW", NULL, NULL);
     if (window == NULL)
     {
         fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n");
@@ -84,7 +84,7 @@ int main(void)
 
     // Set the mouse at the center of the screen
     glfwPollEvents();
-    glfwSetCursorPos(window, 1024*2 / 2, 768*2 / 2);
+    glfwSetCursorPos(window, 1024 / 2, 768 / 2);
 
     // Dark blue background
     glClearColor(0.73f, 0.95f, 0.98f, 0.0f);
@@ -419,7 +419,7 @@ int main(void)
     
     skybox->transform->setLocalRotation(vec3(180, 0, 0));
 
-    cam->transform->setLocalTranslation(vec3(0, -30, 20));
+    cam->transform->setLocalTranslation(vec3(0, -33, 16));
     cam->transform->setLocalRotation(vec3(70, 0, 0));
 
     terrain1->transform->setLocalScale(vec3(10.0f, 10.0f, 10.0f));
