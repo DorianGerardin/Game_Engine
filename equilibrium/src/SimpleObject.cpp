@@ -19,19 +19,6 @@ SimpleObject::~SimpleObject()
     delete this;
 }
 
-void SimpleObject::updateSelf()
-{
-    if (!this->transform->isDirty())
-        return;
-
-    forceUpdateSelf();
-}
-
-void SimpleObject::forceUpdateSelf()
-{
-    this->transform->computeSelfModelMatrix();
-}
-
 void SimpleObject::updateSelfAndChild()
 {
     if (!this->transform->isDirty())

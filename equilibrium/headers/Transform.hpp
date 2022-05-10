@@ -27,12 +27,6 @@ using namespace std;
 #include <common/vboindexer.hpp>
 #include <common/texture.hpp>
 
-// template <typename GLMType, typename = decltype(glm::to_string(std::declval<GLMType>()))>
-// std::ostream &operator<<(std::ostream &out, const GLMType &g)
-// {
-//     return out << glm::to_string(g);
-// }
-
 class Transform
 {
 
@@ -45,16 +39,10 @@ public:
     mat4 modelMatrix = mat4(1.0f);
     mat4 worldModelMatrix = mat4(1.0f);
 
-    vec3 selfScale;       // scale
-    vec3 selfRotation;    // rotation
-    vec3 selfTranslation; // translation
-    mat4 self_modelMatrix = mat4(1.0f);
     bool m_isDirty = true;
 
 protected:
     mat4 getLocalModelMatrix();
-
-    mat4 calculSelfModelMatrix();
 
 public:
     Transform();
@@ -62,7 +50,6 @@ public:
     ~Transform();
 
     void computeModelMatrix();
-    void computeSelfModelMatrix();
 
     void computeModelMatrix(const mat4 &);
     // Setters
@@ -71,12 +58,6 @@ public:
     void setLocalRotation(const glm::vec3 &);
 
     void setLocalScale(const glm::vec3 &);
-
-    void setSelfTranslation(const vec3 &);
-
-    void setSelfRotation(const glm::vec3 &);
-
-    void setSelfScale(const glm::vec3 &);
 
     // Getters
     const glm::vec3 &getLocalTranslation() const;
@@ -87,14 +68,7 @@ public:
 
     const glm::vec3 &getLocalScale() const;
 
-    const glm::vec3 &getSelfTranslation() const;
-
-    const glm::vec3 &getSelfRotation() const;
-
-    const glm::vec3 &getSelfScale() const;
-
     const glm::mat4 &getModelMatrix() const;
-    const glm::mat4 &getSelfModelMatrix() const;
 
     bool isDirty() const;
 };

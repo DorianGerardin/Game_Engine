@@ -113,7 +113,7 @@ void Scene::Step(float dt)
             if (obj->hasRotationObject)
             {
                 // cout << obj->rotationObject->id << endl;
-                if ((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) /*&& obj->id != this->player->id*/)
+                if ((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != this->player->id)
                 {
                     vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
                     float radius = radiusPlayer / (obj->mesh->size * obj->transform->getLocalScale().x);

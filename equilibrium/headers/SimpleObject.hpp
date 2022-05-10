@@ -47,10 +47,6 @@ public:
 
     ~SimpleObject();
 
-    void updateSelf();
-
-    void forceUpdateSelf();
-
     void updateSelfAndChild();
 
     void forceUpdateSelfAndChild();
