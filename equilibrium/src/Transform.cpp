@@ -73,11 +73,8 @@ const glm::vec3 &Transform::getLocalTranslation() const
 
 const vec3 Transform::getWorldTranslation() const
 {
-    // cout << this->modelMatrix[3][0] << " " << this->modelMatrix[3][1] << " " << this->modelMatrix[3][2] << endl;
     vec4 nulVec = vec4(vec3(0.), 1);
     vec4 result = this->modelMatrix * nulVec;
-    // cout << "modelMatrix : " << glm::to_string(this->modelMatrix) << endl;
-    // cout << "result : " << glm::to_string(result) << endl;
     return vec3(result[0], result[1], result[2]);
 }
 

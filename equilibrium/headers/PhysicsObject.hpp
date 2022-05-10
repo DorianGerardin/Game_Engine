@@ -52,7 +52,6 @@ public:
     ~PhysicsObject();
 
     void addVisualSphereRotation();
-    void applyPhysicsMaterial(int materialName);
     void setPhysicsCoeffs(float, float, float);
 
     bool isPlayer();

@@ -42,7 +42,6 @@ class Scene
 {
 
 private:
-    // CAMERA defaultCamera;
     unique_ptr<CameraObject> defaultCamera_ptr;
    
 public:
@@ -58,8 +57,6 @@ public:
     Scene();
 
     ~Scene();
-
-    // void addObject(GameObject *);
 
     void addObject(GameObject *);
 

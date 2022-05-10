@@ -36,7 +36,7 @@ void main(){
             position.z = 5*texture(hmapSampler, vertexUV).r;
         } 
 
-        gl_Position = projectionMatrix * viewMatrix * modelMatrix/*  * selfModelMatrix */ * position;
+        gl_Position = projectionMatrix * viewMatrix * modelMatrix * position;
         // TODO : Output position of the vertex, in clip space : MVP * position
         UV = vertexUV;
         mat3 normalMatrix = mat3(projectionMatrix * viewMatrix * modelMatrix);// mat3(modelMatrix); //mat3(projectionMatrix * viewMatrix * modelMatrix);

@@ -12,7 +12,6 @@ PhysicsObject::PhysicsObject(string id, string filename, float size, GLint model
 
     this->mass = mass;
     this->is_static = is_static;
-    // this->gravity = vec3(0.0f, gravity, 0.0f);
     this->gravity = vec3(0.0f, 0.0f, gravity);
 
     SphereCollider *sphereCollider = new SphereCollider();
@@ -33,7 +32,6 @@ PhysicsObject::PhysicsObject(string id, int meshType, float size, GLint modelID,
 
     this->mass = mass;
     this->is_static = is_static;
-    // this->gravity = vec3(0.0f, gravity, 0.0f);
     this->gravity = vec3(0.0f, 0.0f, gravity);
     if (this->mesh->objectType == SPHERE)
     {
@@ -70,7 +68,7 @@ PhysicsObject ::~PhysicsObject() {}
 
 void PhysicsObject ::addVisualSphereRotation()
 {
-    // cout << "VisualSphereRotation added" << endl;
+
     if (this->mesh->objectType == SPHERE)
     {
         this->hasRotationObject = true;
@@ -78,25 +76,7 @@ void PhysicsObject ::addVisualSphereRotation()
     }
 }
 
-void PhysicsObject::applyPhysicsMaterial(int materialName)
-{
-    // if (this->hasRotationObject)
-    // {
-    //     this->rotationObject->PBRMaterials.albedo = loadBMP_custom(material->albedo);
-    //     this->rotationObject->PBRMaterials.normal = loadBMP_custom(material->normal);
-    //     this->rotationObject->PBRMaterials.metallic = loadBMP_custom(material->metallic);
-    //     this->rotationObject->PBRMaterials.roughness = loadBMP_custom(material->roughness);
-    //     this->rotationObject->PBRMaterials.ao = loadBMP_custom(material->ao);
-    // }
-    // else
-    // {
-    //     this->PBRMaterials.albedo = loadBMP_custom(material->albedo);
-    //     this->PBRMaterials.normal = loadBMP_custom(material->normal);
-    //     this->PBRMaterials.metallic = loadBMP_custom(material->metallic);
-    //     this->PBRMaterials.roughness = loadBMP_custom(material->roughness);
-    //     this->PBRMaterials.ao = loadBMP_custom(material->ao);
-    // }
-}
+
 void PhysicsObject::setPhysicsCoeffs(float staticFriction, float kineticFriction, float restitution)
 {
     this->staticFriction = staticFriction;
@@ -132,7 +112,6 @@ void PhysicsObject::setTrigger(bool b)
 }
 void PhysicsObject::setTriggerType(int type)
 {
-    // this->is_trigger = true;
     using std::placeholders::_1;
     if (type == MOVE_TO_LAST_CHECKPOINT)
         this->onCollision = std::bind(&PhysicsObject::moveToLastCheckpoint, this, _1);
@@ -150,10 +129,6 @@ void PhysicsObject::moveToLastCheckpoint(PhysicsObject *obj)
         obj->velocity = vec3(0.0f, 0.0f, 0.0f);
         obj->transform->setLocalTranslation(obj->lastCheckpoint);
     }
-    else
-    {
-        // cout << this->id << " is not player" << endl;
-    }
 }
 
 void PhysicsObject::updateLastCheckpoint(PhysicsObject *obj)
@@ -161,11 +136,6 @@ void PhysicsObject::updateLastCheckpoint(PhysicsObject *obj)
     if (obj->isPlayer())
     {
         obj->lastCheckpoint = this->transform->getLocalTranslation() + vec3(0.0f, 0.0f, 0.1f);
-        // cout << "update Last Checkpoint to " << this->transform->getLocalTranslation() + vec3(0.0f, 0.0f, 0.1f) << endl;
-    }
-    else
-    {
-        // cout << this->id << " is not player" << endl;
     }
 }
 

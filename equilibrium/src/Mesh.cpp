@@ -136,14 +136,6 @@ void Mesh::generatePlane()
     indices.push_back(0);
     indices.push_back(3);
     indices.push_back(2);
-
-    // indices.push_back(3);
-    // indices.push_back(1);
-    // indices.push_back(0);
-
-    // indices.push_back(2);
-    // indices.push_back(3);
-    // indices.push_back(0);
 }
 
 void Mesh::generateSphere()
@@ -200,7 +192,6 @@ void Mesh::generateCube()
     this->indexed_vertices.clear();
     this->indices.clear();
     this->uv.clear();
-    // float length = this->size;
     float length = this->size / 2.0f;
 
     // cf. http://ilkinulas.github.io/development/unity/2016/05/06/uv-mapping.html

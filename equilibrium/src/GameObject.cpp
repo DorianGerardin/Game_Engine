@@ -250,8 +250,10 @@ void GameObject::draw()
         glDisableVertexAttribArray(0);
         glDisableVertexAttribArray(1);
         glDisableVertexAttribArray(2);
-        /*
-                    glDeleteBuffers(1, &vertexbuffer);
-                    glDeleteBuffers(1, &elementbuffer);*/
+        
+        glDeleteBuffers(1, &vertexbuffer);
+        glDeleteBuffers(1, &elementbuffer);
+        glDeleteBuffers(1, &normalbuffer);
+        glDeleteBuffers(1, &uvbuffer);
     }
 }

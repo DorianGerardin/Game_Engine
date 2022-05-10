@@ -2,18 +2,6 @@
 
 Scene::Scene()
 {
-    // vec3 defaultPosition = vec3(1.75f, 1.f, 4.5f);
-    // vec3 defaultTarget = vec3(0.0f, 0.0f, -1.0f);
-    // vec3 defaultUp = vec3(0.0f, 1.0f, 0.0f);
-
-    // defaultCamera.position = vec3(1.75f, 1.f, 4.5f);
-    // defaultCamera.target = vec3(0.0f, 0.0f, -1.0f);
-    // defaultCamera.up = vec3(0.0f, 1.0f, 0.0f);
-    // this->addCamera(defaultCamera);
-
-    // defaultCamera_ptr = make_unique<CameraObject>(defaultTarget, defaultUp);
-    // CameraObject *defaultCamera = defaultCamera_ptr.get();
-    // this->addCamera2(defaultCamera);
 }
 
 Scene::~Scene()
@@ -86,10 +74,7 @@ void Scene::Step(float dt)
             // Force résultante :         F = m*a
             obj->force = obj->mass * (obj->gravity + obj->acceleration); // apply a force
 
-            // v = v0 + at = v0 + F/m *t
             obj->velocity += (obj->force / obj->mass) * dt;
-            // cout << (obj->force / obj->mass) * dt << endl;
-            // cout << obj->id << " :  " << obj->velocity << endl;
 
             // Clamp max velocity
             if (obj->velocity.x > obj->maxVelocity)
@@ -100,8 +85,6 @@ void Scene::Step(float dt)
                 obj->velocity.y = obj->maxVelocity;
             if (obj->velocity.y < -obj->maxVelocity)
                 obj->velocity.y = -obj->maxVelocity;
-            // if (obj->velocity.z > obj->maxVelocityZ)
-            //     obj->velocity.z = obj->maxVelocityZ;
             if (obj->velocity.z < -obj->maxVelocityZ)
                 obj->velocity.z = -obj->maxVelocityZ;
 
@@ -112,7 +95,6 @@ void Scene::Step(float dt)
 
             if (obj->hasRotationObject)
             {
-                // cout << obj->rotationObject->id << endl;
                 if ((abs(obj->velocity.x) > 0.002 || abs(obj->velocity.y) > 0.002 || abs(obj->velocity.z) > 0.002) && obj->id != this->player->id)
                 {
                     vec3 actualRotation = obj->rotationObject->transform->getLocalRotation();
@@ -130,7 +112,6 @@ void Scene::SendCollisionCallbacks(vector<Collision> &collisions, float dt)
 {
     for (Collision &collision : collisions)
     {
-        // cout << collision.ObjA->id << " et " << collision.ObjB->id << endl;
         auto &a = collision.ObjA->onCollision;
         auto &b = collision.ObjB->onCollision;
 
@@ -161,8 +142,6 @@ void Scene::ResolveCollisions(float dt)
 
             if (points.HasCollision)
             {
-                // cout << "COLLISION ENTRE " << a->id << " ET " << b->id << endl;
-
                 Collision collision;
                 collision.ObjA = a;
                 collision.ObjB = b;
@@ -181,34 +160,14 @@ void Scene::ResolveCollisions(float dt)
                         a->onSurface = true;
                         a->sphereOnPlaneObject = b;
                         a->setPhysicsCoeffs(b->staticFriction, b->kineticFriction, b->restitution);
-                        // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
-                        // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << " --> coeffs : " << a->staticFriction << " " << a->kineticFriction << " " << a->restitution << endl;
                     }
                     else if ((a->mesh->objectType == PLANE || a->mesh->objectType == CUBE) && b->isPlayer())
                     {
                         b->onSurface = true;
                         b->sphereOnPlaneObject = a;
                         b->setPhysicsCoeffs(a->staticFriction, a->kineticFriction, a->restitution);
-                        // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
-                        // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << " --> coeffs : " << b->staticFriction << " " << b->kineticFriction << " " << b->restitution << endl;
                     }
                 }
-            }
-            else
-            {
-                // cout << "PAS DE COLLISION" << endl;
-                // if (a->isPlayer())
-                // {
-                //     a->onSurface = false;
-                //     a->sphereOnPlaneObject = nullptr;
-                //     cout << "pas contact" << endl;
-                // }
-                // if (b->isPlayer())
-                // {
-                //     b->onSurface = false;
-                //     b->sphereOnPlaneObject = nullptr;
-                //     cout << "pas contact" << endl;
-                // }
             }
         }
     }
@@ -216,12 +175,9 @@ void Scene::ResolveCollisions(float dt)
     // Solve Collisions (not triggers)
     for (Solver *solver : SolverList)
     {
-        // cout << "test avant " << solver->returnSolverID() << endl;
         solver->Solve(collisions, dt);
-        // cout << "test après " << solver->returnSolverID() << endl;
     }
 
-    // SendCollisionCallbacks(collisions, dt);
     SendCollisionCallbacks(triggers, dt);
 }
 
@@ -278,7 +234,6 @@ void Scene::draw()
         {
             glUseProgram(LightList[0]->shader);
             glUniform1i(glGetUniformLocation(LightList[0]->shader, "nbLights"), LightList.size());
-            // cout << "Draw " << objects[i]->id << " avec " <<LightList.size() <<  " lights"<<endl;
             for (int j = 0; j < LightList.size(); j++)
             {
                 LightList[j]->draw(j);
@@ -287,5 +242,4 @@ void Scene::draw()
             objects[i]->draw();
         }
     }
-    // light->draw();
 }
