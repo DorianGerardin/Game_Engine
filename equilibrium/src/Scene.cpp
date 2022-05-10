@@ -182,7 +182,7 @@ void Scene::ResolveCollisions(float dt)
                         a->sphereOnPlaneObject = b;
                         a->setPhysicsCoeffs(b->staticFriction, b->kineticFriction, b->restitution);
                         // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << endl;
-                        cout << a->id << " on surface " << a->sphereOnPlaneObject->id << " --> coeffs : " << a->staticFriction << " " << a->kineticFriction << " " << a->restitution << endl;
+                        // cout << a->id << " on surface " << a->sphereOnPlaneObject->id << " --> coeffs : " << a->staticFriction << " " << a->kineticFriction << " " << a->restitution << endl;
                     }
                     else if ((a->mesh->objectType == PLANE || a->mesh->objectType == CUBE) && b->isPlayer())
                     {
@@ -190,7 +190,7 @@ void Scene::ResolveCollisions(float dt)
                         b->sphereOnPlaneObject = a;
                         b->setPhysicsCoeffs(a->staticFriction, a->kineticFriction, a->restitution);
                         // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << endl;
-                        cout << b->id << " on surface " << b->sphereOnPlaneObject->id << " --> coeffs : " << b->staticFriction << " " << b->kineticFriction << " " << b->restitution << endl;
+                        // cout << b->id << " on surface " << b->sphereOnPlaneObject->id << " --> coeffs : " << b->staticFriction << " " << b->kineticFriction << " " << b->restitution << endl;
                     }
                 }
             }

@@ -191,7 +191,7 @@ int main(void)
     GLuint parquet_texture = loadBMP_custom("textures/parquet.bmp");
     GLuint smiley_texture = loadBMP_custom("textures/smiley.bmp");
     GLuint dice_texture = loadBMP_custom("textures/dice.bmp");
-    GLuint skybox_texture = loadBMP_custom("textures/skybox.bmp");
+    GLuint skybox_texture = loadBMP_custom("textures/metallic.bmp");
 
     GLuint TextureIDRock = glGetUniformLocation(programID, "hmapSampler");
     // glActiveTexture(GL_TEXTURE0);
@@ -213,7 +213,7 @@ int main(void)
     // For speed computation
     double lastTime = glfwGetTime();
     int nbFrames = 0;
-    float earthGravity = 9.81f;
+    float earthGravity = 2.5f;
     float gravity = earthGravity;
     // float gravity = 2.5f;
 
@@ -228,17 +228,93 @@ int main(void)
     // --------------------
     // Déclaration des Objets
     unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
-    LightObject *light = light_uniquePtr.get();
+    LightObject *light_terrain1_1 = light_uniquePtr.get();
+    light_terrain1_1->position = vec3(1.,1. ,.9);
+
     unique_ptr<LightObject> light2_uniquePtr = make_unique<LightObject>(programID);
-    LightObject *light2 = light2_uniquePtr.get();
-    light2->position = vec3(0.0f);
-    light2->ambient = vec3(0., 1., 0.);
-    // 5.0f, 5.0f, 5.0f
+    LightObject *light_terrain1_2 = light2_uniquePtr.get();
+    light_terrain1_2->position = vec3(5., 5.,0.9 );
+
     unique_ptr<LightObject> light3_uniquePtr = make_unique<LightObject>(programID);
-    LightObject *light3 = light3_uniquePtr.get();
-    light3->position = vec3(5.0f, 0.0f, 1.0f);
-    // vec3(5.0f, 0.0f, 1.0f)
-    light3->ambient = vec3(0., 0., 1.);
+    LightObject *light_terrain1_3 = light3_uniquePtr.get();
+    light_terrain1_3->position = vec3(1., 9.,0.9 );
+
+    unique_ptr<LightObject> light4_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain1_4 = light4_uniquePtr.get();
+    light_terrain1_4->position = vec3(9., 1.,0.9 );
+
+    unique_ptr<LightObject> light5_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain1_5 = light5_uniquePtr.get();
+    light_terrain1_5->position = vec3(9., 9.,0.9 );
+
+    unique_ptr<LightObject> light6_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain1_6 = light6_uniquePtr.get();
+    light_terrain1_6->position = vec3(5.0f, 0.f, 0.9 );
+    light_terrain1_6->ambient = vec3(1., 0.2, 0.7);
+
+    //terrain 2
+    unique_ptr<LightObject> light1_terrain2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain2_1 = light1_terrain2_uniquePtr.get();
+    light_terrain2_1->position = vec3(15.0f, 5.0f, -0.8f );
+    light_terrain2_1->ambient = vec3(.61, 0.83, 0.87);
+
+    unique_ptr<LightObject> light2_terrain2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain2_2 = light2_terrain2_uniquePtr.get();
+    light_terrain2_2->position = vec3(11.0f, 1.0f, -0.8f );
+    light_terrain2_2->ambient = vec3(.61, 0.83, 0.87);
+
+    unique_ptr<LightObject> light3_terrain2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain2_3 = light3_terrain2_uniquePtr.get();
+    light_terrain2_3->position = vec3(19.0f, 1.0f, -0.8f );
+    light_terrain2_3->ambient = vec3(.61, 0.83, 0.87);
+
+    unique_ptr<LightObject> light4_terrain2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain2_4 = light4_terrain2_uniquePtr.get();
+    light_terrain2_4->position = vec3(11.0f, 9, -0.8f );
+    light_terrain2_4->ambient = vec3(.61, 0.83, 0.87); //.61, 0.83, 0.87s
+
+    unique_ptr<LightObject> light5_terrain2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_terrain2_5 = light5_terrain2_uniquePtr.get();
+    light_terrain2_5->position = vec3(19.0f, 9.f, -0.8f );
+    light_terrain2_5->ambient = vec3(.61, 0.83, 0.87);
+
+    //lava
+    unique_ptr<LightObject> light1_lava_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_lava_1 = light1_lava_uniquePtr.get();
+    light_lava_1->position = vec3(28.4f, 5.0f, -1.8f);
+    light_lava_1->ambient = vec3(1.0, 0, 0);
+
+    unique_ptr<LightObject> light2_lava_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_lava_2 = light2_lava_uniquePtr.get();
+    light_lava_2->position = vec3(28.4f, 7.0f, -1.9f);
+    light_lava_2->ambient = vec3(1.0, 0, 0);
+
+    unique_ptr<LightObject> light3_lava_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_lava_3 = light3_lava_uniquePtr.get();
+    light_lava_3->position = vec3(28.3f, 3.0f, -1.8f);
+    light_lava_3->ambient = vec3(1.0, 0, 0);
+
+    unique_ptr<LightObject> light4_lava_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_lava_4 = light4_lava_uniquePtr.get();
+    light_lava_4->position = vec3(24.5, 3., -1.8);
+    light_lava_4->ambient = vec3(1, 0, 0);
+
+    //checkpoint
+    unique_ptr<LightObject> light1_checkpoint_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light_checkpoint_1 = light1_checkpoint_uniquePtr.get();
+    light_checkpoint_1->position = vec3(31.2f, 7.2f, 2.5f);
+    light_checkpoint_1->ambient = vec3(.95, 0.97, 0.05);
+
+    // unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
+    // LightObject *light_begin_1 = light_uniquePtr.get();
+    // unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
+    // LightObject *light_begin_1 = light_uniquePtr.get();
+    // unique_ptr<LightObject> light2_uniquePtr = make_unique<LightObject>(programID);
+    // LightObject *light2 = light2_uniquePtr.get();
+    // light2->position = vec3(0.0f);
+    // light2->ambient = vec3(1.);
+    // 5.0f, 5.0f, 5.0f
+
 
     unique_ptr<GameObject> skybox_uniquePtr = make_unique<GameObject>("GO_SkyBox", SPHERE, 200.0f, modelID, programID);
     GameObject *skybox = skybox_uniquePtr.get();
@@ -337,6 +413,7 @@ int main(void)
     // terrain->addChild(move(Earth_uniquePtr));
     // Earth->addChild(move(EarthRotation_uniquePtr));
     Earth->addChild(move(defaultCamera_ptr));
+    // Earth->addChild(move(light6_uniquePtr));
     // Moon->addChild(move(MoonRotation_uniquePtr));
 
     // --------------------
@@ -371,7 +448,7 @@ int main(void)
     planeFall->transform->setLocalTranslation(vec3(0.0f, 0.0f, -5.0f));
 
     Earth->transform->setLocalScale(vec3(0.25f, 0.25f, 0.25f));
-    Earth->transform->setLocalTranslation(vec3(5.0f, 0.5f, 5.0f));
+    Earth->transform->setLocalTranslation( vec3(5.0f, 0.5f, 10.0f)); //25.9f, 5.0f, -1.8f vec3(5.0f, 0.5f, 10.0f)
 
     ballBrick->transform->setLocalTranslation(vec3(5.5f, 5.0f, 5.0f));
     // ballBrick->addVisualSphereRotation();
@@ -389,8 +466,24 @@ int main(void)
     // --------------------
     // Add Objects to Scene
     scene->addPlayer(Earth);
-    scene->addLight(light);
-    scene->addLight(light2);
+    scene->addLight(light_terrain1_1);
+    scene->addLight(light_terrain1_2);
+    scene->addLight(light_terrain1_3);
+    scene->addLight(light_terrain1_4);
+    scene->addLight(light_terrain1_5);
+    scene->addLight(light_terrain1_6);
+    scene->addLight(light_terrain2_1);
+    scene->addLight(light_terrain2_2);
+    scene->addLight(light_terrain2_3);
+    scene->addLight(light_terrain2_4);
+    scene->addLight(light_terrain2_5);
+    scene->addLight(light_lava_1);
+    scene->addLight(light_lava_2);
+    scene->addLight(light_lava_3);
+    scene->addLight(light_lava_4);
+
+    scene->addLight(light_checkpoint_1);
+    
     scene->addCamera(cam);
     scene->addObject(skybox);
     scene->addPhysicsObject(Earth);
