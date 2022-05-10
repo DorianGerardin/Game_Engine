@@ -13,6 +13,6 @@ class LightObject: public SimpleObject {
 
     LightObject(GLuint);
 
-    void draw();
+    void draw(int);
     
 };

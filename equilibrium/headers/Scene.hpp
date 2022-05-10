@@ -44,14 +44,15 @@ class Scene
 private:
     // CAMERA defaultCamera;
     unique_ptr<CameraObject> defaultCamera_ptr;
-    LightObject *light;
-
+   
 public:
     vector<GameObject *> objects;
     vector<CameraObject *> cameras;
     vector<PhysicsObject *> PhysicsObjectList;
+    vector<LightObject *> LightList;
     vector<Solver *> SolverList;
     PhysicsObject *player;
+    
 
 public:
     Scene();

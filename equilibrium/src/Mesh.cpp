@@ -129,21 +129,21 @@ void Mesh::generatePlane()
 
     // --------------------
 
-    // indices.push_back(0);
-    // indices.push_back(1);
-    // indices.push_back(3);
-
-    // indices.push_back(0);
-    // indices.push_back(3);
-    // indices.push_back(2);
-
-    indices.push_back(3);
+    indices.push_back(0);
     indices.push_back(1);
-    indices.push_back(0);
-
-    indices.push_back(2);
     indices.push_back(3);
+
     indices.push_back(0);
+    indices.push_back(3);
+    indices.push_back(2);
+
+    // indices.push_back(3);
+    // indices.push_back(1);
+    // indices.push_back(0);
+
+    // indices.push_back(2);
+    // indices.push_back(3);
+    // indices.push_back(0);
 }
 
 void Mesh::generateSphere()
@@ -357,7 +357,7 @@ void Mesh::computeFaceNormals()
         e_20 = indexed_vertices[indices[i * 3 + 2]] - indexed_vertices[indices[i * 3 + 0]];
         e_10 = normalize(e_10);
         e_20 = normalize(e_20);
-        faceNormals[i] = cross(e_10, e_20);
+        faceNormals[i] = cross(e_20, e_10);
 
         faceNormals[i] = normalize(faceNormals[i]);
     }

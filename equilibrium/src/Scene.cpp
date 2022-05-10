@@ -33,7 +33,7 @@ void Scene::addCamera(CameraObject *cam)
 
 void Scene::addLight(LightObject *light)
 {
-    this->light = light;
+    this->LightList.push_back(light);
 }
 
 void Scene::addPlayer(PhysicsObject *player)
@@ -273,8 +273,13 @@ void Scene::draw()
     {
         if (objects[i]->toDraw)
         {
-            // cout << "Draw " << objects[i]->id << endl;
-            light->draw();
+            glUseProgram(LightList[0]->shader);
+            glUniform1i(glGetUniformLocation(LightList[0]->shader, "nbLights"), LightList.size());
+            // cout << "Draw " << objects[i]->id << " avec " <<LightList.size() <<  " lights"<<endl;
+            for (int j = 0; j < LightList.size(); j++){
+                LightList[j]->draw(j);
+            }
+            
             objects[i]->draw();
         }
     }

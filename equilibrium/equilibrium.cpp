@@ -201,6 +201,16 @@ int main(void)
     // Déclaration des Objets
     unique_ptr<LightObject> light_uniquePtr = make_unique<LightObject>(programID);
     LightObject *light = light_uniquePtr.get();
+    unique_ptr<LightObject> light2_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light2 = light2_uniquePtr.get();
+    light2->position = vec3(0.0f);
+    light2->ambient = vec3(0., 1., 0.) ;
+    // 5.0f, 5.0f, 5.0f
+    unique_ptr<LightObject> light3_uniquePtr = make_unique<LightObject>(programID);
+    LightObject *light3 = light3_uniquePtr.get();
+    light3->position = vec3(5.0f, 0.0f, 1.0f);
+    // vec3(5.0f, 0.0f, 1.0f)
+    light3->ambient = vec3(0., 0., 1.) ;
 
     unique_ptr<GameObject> skybox_uniquePtr = make_unique<GameObject>("GO_SkyBox", SPHERE, 200.0f, modelID, programID);
     GameObject *skybox = skybox_uniquePtr.get();
@@ -329,6 +339,7 @@ int main(void)
     // Add Objects to Scene
     scene->addPlayer(Earth);
     scene->addLight(light);
+    scene->addLight(light2);
     scene->addCamera(cam);
     scene->addObject(skybox);
     scene->addPhysicsObject(Earth);
