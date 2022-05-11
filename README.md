@@ -2,7 +2,7 @@
 ## Réalisé par GERARDIN Dorian, GERMAIN Gauthier, STEFANOVA Albena
 
 ### Execution du projet 
-- Télécharger le dossier Equilibrium.zip et à la racine du dossier, ouvrez un terminal
+- Télécharger le dossier Game_engine.zip et à la racine du dossier, ouvrez un terminal
 Exécuter les commandes :
 
 ```bash
